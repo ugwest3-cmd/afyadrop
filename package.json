@@ -1,0 +1,20 @@
+{
+  "name": "afya-drop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Afya Drop — AI layer for Afya-Links. Supabase + Vercel + Railway.",
+  "workspaces": [
+    "services/*",
+    "web/*"
+  ],
+  "scripts": {
+    "dev:ai": "npm run dev -w services/ai-service",
+    "dev:backend": "npm run dev -w services/backend",
+    "dev:baileys": "npm run dev -w services/baileys",
+    "dev:web": "npm run dev -w web/frontend",
+    "build": "npm run build --workspaces"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

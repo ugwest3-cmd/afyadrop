@@ -1,0 +1,25 @@
+# dependencies
+node_modules/
+
+# builds
+dist/
+.next/
+out/
+
+# env / secrets
+.env
+.env.local
+.env.*.local
+
+# Baileys WhatsApp session (never commit auth state)
+auth_state/
+services/baileys/auth_state/
+
+# logs
+*.log
+npm-debug.log*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/

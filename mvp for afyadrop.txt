@@ -1,0 +1,137 @@
+AFYA DROP — MVP PLAN
+====================
+
+WHAT IT IS
+----------
+Afya Drop is a clinical decision-support AI assistant for medical personnel in Uganda.
+A clinician sends a diagnosis or treatment question over WhatsApp (plain text) and gets
+an answer generated STRICTLY from the Uganda Clinical Guidelines (UCG) and any other
+reference documents the admins upload — nothing else.
+
+This is a retrieval-augmented generation (RAG) product: the AI does not rely on its own
+general medical knowledge; it retrieves the relevant UCG passages and answers only from
+them. If the UCG does not cover the question, the assistant says so.
+
+There is NO medicine ordering and NO business/sales insight in this product.
+
+
+LOCKED DECISIONS
+----------------
+  - Product: clinical decision-support assistant (diagnosis + treatment) for medical personnel.
+  - Source of truth: Uganda Clinical Guidelines (UCG) + other files uploaded via the admin panel.
+    The assistant answers from these documents ONLY.
+  - AI provider: Groq (console.groq.com) — large-language-model inference.
+  - Channel: one main WhatsApp business number connected via Baileys (WhatsApp Web). Text only.
+  - Access: users register on the website; their WhatsApp number links account <-> wallet.
+  - Monetisation: prepaid credits. 1 credit = 100 UGX. Minimum purchase 1,000 UGX = 10 credits.
+    Each clinical question costs 1 credit.
+  - Payments: PesaPal (UGX).
+  - Stack: Supabase (PostgreSQL + pgvector) + Vercel (website/admin) + Railway (backend, AI service, Baileys).
+  - DB separation: Option A — the AI microservice NEVER talks to the database. The main backend
+    does all Supabase work (retrieval, wallets, users) and passes context to the AI service.
+
+
+HOW A QUESTION FLOWS (end to end)
+---------------------------------
+  1. A registered, verified clinician WhatsApps a clinical question to the main number.
+  2. The Baileys service receives it and forwards {phone, text} to the main backend.
+  3. Backend: look up the user; check they are verified and have >= 1 credit.
+  4. Backend: embed the question, run a pgvector similarity search over the UCG chunks,
+     and take the top matching passages as context.
+  5. Backend: send {question, context} to the AI microservice.
+  6. AI microservice (Groq): generate a clinician-structured answer strictly from the context:
+       - likely differentials
+       - recommended workup / investigations
+       - treatment with exact drug doses, route, frequency, duration (adult vs paediatric)
+       - red flags / danger signs
+       - when to refer
+     plus a standing disclaimer: "Decision support only — confirm against the full UCG and
+     use your clinical judgement."
+  7. Backend: on a successful answer, deduct 1 credit, log the Q&A, and reply on WhatsApp.
+     If there is no relevant UCG context, the answer states that the guidelines don't cover it.
+
+
+SERVICES (Railway)
+------------------
+  1. backend      — registration/auth, wallets, credits, PesaPal IPN, document ingestion,
+                    question routing, pgvector retrieval. The only service that touches Supabase.
+  2. ai-service   — Groq clinical answering + embeddings. No DB access (Option A).
+  3. baileys      — WhatsApp Web session on the main number; forwards messages to backend and
+                    sends replies. Session persisted on a Railway volume.
+
+
+FRONTEND (Vercel)
+-----------------
+  - /register  — signup: full name, WhatsApp number (+256), medical qualification (dropdown),
+                 practising licence number. OTP is sent over WhatsApp to verify the number.
+  - /login     — sign in (MVP: by user id).
+  - /dashboard — wallet balance + buy credits (PesaPal checkout; bundles of 10/25/50/100).
+  - /admin     — upload the UCG / reference documents; the text is chunked, embedded, and
+                 stored for retrieval. List/manage uploaded documents.
+
+
+DATABASE (Supabase)
+-------------------
+  users, otp_codes, wallets, credit_transactions, payments,
+  documents, document_chunks (vector), qa_logs
+  Functions: spend_credit, add_credits, match_document_chunks.
+  RLS enabled on all tables; the backend uses the service-role key.
+
+
+CREDIT RULES (locked)
+---------------------
+  - 1 credit = 100 UGX.
+  - Minimum purchase = 1,000 UGX (10 credits).
+  - Each clinical question costs 1 credit.
+  - A credit is deducted ONLY after a successful AI answer (a failed Groq call is free).
+  - If balance is 0, the user gets a WhatsApp message with a top-up link and no answer.
+
+
+SAFETY & POSITIONING
+--------------------
+  - The assistant is a decision-SUPPORT aid for qualified clinicians, not a replacement for
+    clinical judgement. Every answer carries the disclaimer.
+  - Answers are grounded ONLY in the uploaded UCG/reference text; the model is instructed not
+    to use outside knowledge and to say when the guidelines don't cover a question.
+  - Recommended: a human review of the UCG text quality and a clinician review of sample answers
+    before launch.
+
+
+ENVIRONMENT VARIABLES
+---------------------
+  ai-service:  GROQ_API_KEY, GROQ_MODEL, INTERNAL_API_SECRET,
+               EMBEDDING_API_KEY, EMBEDDING_BASE_URL, EMBEDDING_MODEL, PORT
+  backend:     SUPABASE_URL, SUPABASE_SERVICE_KEY, AFYA_DROP_AI_URL, BAILEYS_URL,
+               INTERNAL_API_SECRET, ADMIN_PHONE, CREDIT_PRICE_UGX=100, MIN_PURCHASE_UGX=1000,
+               PESAPAL_CONSUMER_KEY, PESAPAL_CONSUMER_SECRET, PESAPAL_BASE_URL,
+               PESAPAL_IPN_ID, PESAPAL_CALLBACK_URL, PORT
+  baileys:     SESSION_STORE_PATH, MAIN_BACKEND_URL, INTERNAL_API_SECRET, PORT
+  web:         NEXT_PUBLIC_API_URL
+
+
+DEPLOYMENT PLAN (rollout order)
+-------------------------------
+  1. Supabase: run schema.sql (tables + pgvector + functions). Enable the vector extension.
+  2. Groq: create an API key at console.groq.com. Pick an embeddings model/provider for UCG chunks.
+  3. Railway — ai-service: deploy, set GROQ_API_KEY + INTERNAL_API_SECRET + embedding vars, verify /health.
+  4. Railway — backend: set Supabase + PesaPal + AI/ Baileys URLs + INTERNAL_API_SECRET, deploy.
+  5. Railway — baileys: attach a volume for session state, deploy, scan the QR with the main
+     business phone to pair, confirm /health shows connected.
+  6. Admin: upload the UCG via /admin, confirm chunks are stored (documents status = ready).
+  7. PesaPal: register the IPN URL, run a sandbox 1,000 UGX purchase, confirm 10 credits land.
+  8. Vercel: point NEXT_PUBLIC_API_URL at the backend and deploy.
+  9. End-to-end test:
+       - register a clinician (number + qualification + licence) and verify the WhatsApp OTP
+       - buy 10 credits via PesaPal sandbox
+       - WhatsApp a clinical question (e.g. malaria treatment) -> get a UCG-grounded answer
+         and confirm 1 credit is deducted
+       - ask something the UCG does not cover -> confirm the assistant says so (no hallucination)
+       - check the admin panel lists the uploaded UCG
+
+
+OUT OF SCOPE (this MVP)
+-----------------------
+  - Voice notes (text-only over WhatsApp).
+  - Medicine ordering / supply, and any business/sales analytics.
+  - Multi-currency (UGX only).
+  - PDF/DOCX parsing in the admin panel (MVP ingests plain-text exports of the UCG).
