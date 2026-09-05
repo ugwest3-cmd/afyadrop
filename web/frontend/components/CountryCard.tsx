@@ -11,7 +11,7 @@ export function CountryCard({ country }: { country: AfyaCountry }) {
       <h3 className="mt-5 text-xl font-bold text-teal">{country.name}</h3>
       <p className="mt-2 min-h-12 text-sm leading-6 text-muted">{country.body}</p>
       <p className="mt-5 border-t border-teal/10 pt-4 text-sm font-semibold text-teal">
-        {live ? country.whatsapp : "Service launching soon"}
+        {live ? "Available in Afya Drop App" : "Service launching soon"}
       </p>
     </article>
   );

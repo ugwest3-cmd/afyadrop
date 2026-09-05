@@ -10,7 +10,6 @@
   "scripts": {
     "dev:ai": "npm run dev -w services/ai-service",
     "dev:backend": "npm run dev -w services/backend",
-    "dev:baileys": "npm run dev -w services/baileys",
     "dev:web": "npm run dev -w web/frontend",
     "build": "npm run build --workspaces"
   },

@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { supabase } from "../db.js";
 import { ai } from "../ai.js";
-import { sendWhatsAppText } from "../baileysClient.js";
 import { retrieveContext } from "./documents.js";
+import { requireAuth } from "../authMiddleware.js";
 import { config } from "../config.js";
 
 function topUpLink(userId: string): string {
@@ -11,35 +11,33 @@ function topUpLink(userId: string): string {
 
 export const qaRouter = Router();
 
-// POST /qa/from-whatsapp  { phone, text }  — called by the Baileys service
-qaRouter.post("/from-whatsapp", async (req, res) => {
-  const { phone, text } = req.body ?? {};
-  if (!phone || typeof text !== "string" || !text.trim()) {
-    res.status(400).json({ error: "phone and text are required" });
+// POST /qa/ask  { question, image_url? }  — in-app clinical Q&A, optionally
+// attaching a lab report photo. Requires a valid Supabase session.
+qaRouter.post("/ask", requireAuth, async (req, res) => {
+  const { question: rawQuestion, image_url } = req.body ?? {};
+  const question = typeof rawQuestion === "string" ? rawQuestion.trim() : "";
+  if (!question) {
+    res.status(400).json({ error: "question is required" });
     return;
   }
-  const question = text.trim();
 
-  // 1. Resolve user
+  // 1. Resolve user profile
   const { data: user } = await supabase
     .from("users")
-    .select("id, phone_verified, full_name, suspended, country")
-    .eq("phone", String(phone))
+    .select("id, suspended, country, profile_completed")
+    .eq("id", req.userId)
     .maybeSingle();
 
   if (!user) {
-    await sendWhatsAppText(String(phone), `Please register at ${config.siteUrl}/register to use Afya Drop.`);
-    res.json({ ok: true, action: "unregistered" });
+    res.status(404).json({ error: "user not found" });
     return;
   }
   if (user.suspended) {
-    await sendWhatsAppText(String(phone), "Your Afya Drop account is suspended. Please contact support.");
-    res.json({ ok: true, action: "suspended" });
+    res.status(403).json({ error: "your Afya Drop account is suspended" });
     return;
   }
-  if (!user.phone_verified) {
-    await sendWhatsAppText(String(phone), `Please verify your number at ${config.siteUrl} to continue.`);
-    res.json({ ok: true, action: "unverified" });
+  if (!user.profile_completed) {
+    res.status(403).json({ error: "please complete your profile before asking a question" });
     return;
   }
 
@@ -51,24 +49,20 @@ qaRouter.post("/from-whatsapp", async (req, res) => {
     .maybeSingle();
   const balance = wallet?.balance_credits ?? 0;
   if (balance < 1) {
-    await sendWhatsAppText(
-      String(phone),
-      `You have no credits left. Top up here to keep asking questions: ${topUpLink(user.id)}`,
-    );
-    res.json({ ok: true, action: "no_credits" });
+    res.status(402).json({ error: "no credits left", top_up_url: topUpLink(user.id) });
     return;
   }
 
-  // 3. Retrieve UCG context + answer via AI service
+  // 3. Retrieve guideline context + answer via AI service (optionally
+  //    grounded by an uploaded lab report image).
   let answer: string;
   let grounded = false;
   try {
     const context = await retrieveContext(question, user.country ?? "UG");
-    const result = await ai.answer(question, context);
+    const result = await ai.answer(question, context, typeof image_url === "string" ? image_url : undefined);
     answer = result.answer;
     grounded = result.grounded;
   } catch (err) {
-    await sendWhatsAppText(String(phone), "Sorry, Afya Drop could not answer right now. Please try again.");
     res.status(502).json({ error: (err as Error).message });
     return;
   }
@@ -87,11 +81,11 @@ qaRouter.post("/from-whatsapp", async (req, res) => {
     grounded,
   });
 
-  // 6. Reply over WhatsApp (with a top-up link if they just ran out)
-  let reply = answer;
-  if (typeof newBalance === "number" && newBalance === 0) {
-    reply += `\n\nThat was your last credit. Top up here: ${topUpLink(user.id)}`;
-  }
-  await sendWhatsAppText(String(phone), reply);
-  res.json({ ok: true, action: "answered", grounded, balance: newBalance });
+  res.json({
+    ok: true,
+    answer,
+    grounded,
+    balance: newBalance,
+    low_balance: typeof newBalance === "number" && newBalance === 0,
+  });
 });

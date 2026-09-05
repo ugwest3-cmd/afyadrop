@@ -9,17 +9,17 @@ const sections: Array<{ title: string; body: string[] }> = [
   {
     title: "1. Who we are",
     body: [
-      "Afya Drop (\"we\", \"us\", \"our\") provides a clinical decision-support assistant for qualified medical professionals across Africa, accessible via WhatsApp. Our website is afyadrop.com.",
+      "Afya Drop (\"we\", \"us\", \"our\") provides a clinical decision-support assistant for qualified medical professionals across Africa, accessible via the Afya Drop mobile app. Our website is afyadrop.com.",
       "This Privacy Policy explains what information we collect, why, and how we protect it.",
     ],
   },
   {
     title: "2. Information we collect",
     body: [
-      "Account information: full name, country, mobile (WhatsApp) number, medical qualification, and practising licence number, provided when you register.",
-      "Usage data: the clinical questions you ask, the answers returned, and timestamps (our Q&A log).",
+      "Account information: full name, email address (or Google account), country, medical qualification, and practising licence number, provided when you register.",
+      "Usage data: the clinical questions you ask, any lab report photos you attach, the answers returned, and timestamps (our Q&A log).",
       "Payment data: credit purchases are processed by PesaPal. We store the transaction amount, credits purchased, and status — we do not store your mobile money PIN or card details.",
-      "Technical data: basic device/browser information and cookies needed to operate the website.",
+      "Technical data: basic device/browser information and cookies needed to operate the website and app.",
     ],
   },
   {
@@ -27,7 +27,7 @@ const sections: Array<{ title: string; body: string[] }> = [
     body: [
       "To verify that you are a qualified medical professional.",
       "To operate the credit wallet and process payments.",
-      "To answer your clinical questions over WhatsApp and improve the service.",
+      "To answer your clinical questions in the Afya Drop app and improve the service.",
       "To send service messages (verification codes, low-balance and purchase confirmations).",
       "To meet legal and regulatory obligations.",
     ],
@@ -35,7 +35,7 @@ const sections: Array<{ title: string; body: string[] }> = [
   {
     title: "4. What we do NOT do",
     body: [
-      "We do not collect patient-identifiable information. Please do not send patient names or identifying details in your questions.",
+      "We do not collect patient-identifiable information. Please do not send patient names or identifying details in your questions or lab report images.",
       "We do not sell your personal data to third parties.",
       "We do not use your questions to identify or profile individual patients.",
     ],
@@ -43,7 +43,7 @@ const sections: Array<{ title: string; body: string[] }> = [
   {
     title: "5. Data sharing",
     body: [
-      "We share data only with the service providers needed to run Afya Drop: Supabase (database), our clinical answer service, PesaPal (payments), and WhatsApp (message delivery). Each is bound by its own data-protection terms.",
+      "We share data only with the service providers needed to run Afya Drop: Supabase (database & authentication, including Google sign-in), our clinical answer service, and PesaPal (payments). Each is bound by its own data-protection terms.",
       "We may disclose information if required by applicable law or a lawful request by a regulator.",
     ],
   },

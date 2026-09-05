@@ -9,7 +9,7 @@ export function Footer() {
           <img src="/logo-full.png" alt="Afya Drop" className="h-16 w-auto" />
           <p className="mt-3 max-w-sm text-sm text-cream/70">
             Clinical decision-support grounded in each country's national clinical guidelines,
-            delivered over WhatsApp.
+            delivered through the Afya Drop mobile app.
           </p>
           <p className="mt-4 text-xs text-cream/50">
             Afya Drop is a decision-support aid for qualified clinicians. It is not a substitute for
