@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabaseClient";
 import { api } from "@/lib/api";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
@@ -10,6 +12,7 @@ const MIN_UGX = 1000;
 const BUNDLES = [10, 25, 50, 100];
 
 export default function Dashboard() {
+  const router = useRouter();
   const [userId, setUserId] = useState("");
   const [balance, setBalance] = useState<number | null>(null);
   const [credits, setCredits] = useState(25);
@@ -17,12 +20,29 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const id = window.localStorage.getItem("afyadrop_user_id") ?? "";
-    setUserId(id);
-    if (id) {
-      api.balance(id).then((b) => setBalance(b.balance_credits)).catch(() => setBalance(0));
-    }
-  }, []);
+    supabase.auth.getSession().then(async ({ data }) => {
+      if (!data.session) {
+        router.push("/login");
+        return;
+      }
+      try {
+        const { user } = await api.me();
+        if (!user) {
+          router.push("/login");
+          return;
+        }
+        setUserId(user.id);
+        if (!user.profile_completed) {
+          router.push("/register");
+          return;
+        }
+        const b = await api.balance(user.id);
+        setBalance(b.balance_credits);
+      } catch {
+        setBalance(0);
+      }
+    });
+  }, [router]);
 
   const amount = credits * CREDIT_PRICE;
   const belowMin = amount < MIN_UGX;
@@ -53,7 +73,7 @@ export default function Dashboard() {
           <div className="mt-2 text-sm font-semibold uppercase tracking-wide text-cream/70">credits remaining</div>
           {balance === 0 && (
             <p className="mt-4 max-w-sm text-sm text-cream/70">
-              You're out of credits. Top up below to keep asking questions on WhatsApp.
+              You're out of credits. Top up below to keep asking questions in the Afya Drop app.
             </p>
           )}
         </Card>

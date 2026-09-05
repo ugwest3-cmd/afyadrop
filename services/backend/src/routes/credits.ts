@@ -2,12 +2,12 @@ import { Router } from "express";
 import { supabase } from "../db.js";
 import { config } from "../config.js";
 import { createPesapalOrder, getTransactionStatus } from "../pesapal.js";
-import { sendWhatsAppText } from "../baileysClient.js";
+import { requireAuth } from "../authMiddleware.js";
 
 export const creditsRouter = Router();
 
 // GET /credits/balance/:userId
-creditsRouter.get("/balance/:userId", async (req, res) => {
+creditsRouter.get("/balance/:userId", requireAuth, async (req, res) => {
   const { userId } = req.params;
   const { data, error } = await supabase
     .from("wallets")
@@ -22,7 +22,7 @@ creditsRouter.get("/balance/:userId", async (req, res) => {
 });
 
 // POST /credits/purchase  { user_id, credits }
-creditsRouter.post("/purchase", async (req, res) => {
+creditsRouter.post("/purchase", requireAuth, async (req, res) => {
   const { user_id, credits } = req.body ?? {};
   const qty = Number(credits);
   if (!user_id || !Number.isInteger(qty) || qty <= 0) {
@@ -35,7 +35,7 @@ creditsRouter.post("/purchase", async (req, res) => {
     return;
   }
 
-  const { data: user } = await supabase.from("users").select("full_name, phone").eq("id", user_id).single();
+  const { data: user } = await supabase.from("users").select("full_name, email").eq("id", user_id).single();
   if (!user) {
     res.status(404).json({ error: "user not found" });
     return;
@@ -57,7 +57,7 @@ creditsRouter.post("/purchase", async (req, res) => {
       paymentId: payment.id,
       amountUgx,
       description: `Afya Drop: ${qty} credits`,
-      phone: user.phone,
+      email: user.email,
       firstName: nameParts[0],
       lastName: nameParts.slice(1).join(" "),
     });
@@ -105,10 +105,6 @@ creditsRouter.post("/ipn", async (req, res) => {
         p_amount_ugx: payment.amount_ugx,
         p_reference: payment.pesapal_tracking_id,
       });
-      const { data: user } = await supabase.from("users").select("phone").eq("id", payment.user_id).single();
-      if (user?.phone) {
-        await sendWhatsAppText(user.phone, `Payment received. ${payment.credits} credits added to your Afya Drop wallet.`);
-      }
     } else if (!paid) {
       await supabase.from("payments").update({ status: "failed" }).eq("id", payment.id);
     }

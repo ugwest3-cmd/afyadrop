@@ -3,12 +3,10 @@ import { StatCard } from "@/components/StatCard";
 import { SectionHeading } from "@/components/SectionHeading";
 import { CountryCard } from "@/components/CountryCard";
 import { UseCaseCard } from "@/components/UseCaseCard";
-import { WhatsAppMockup } from "@/components/WhatsAppMockup";
+import { AppMockup } from "@/components/AppMockup";
 import { PricingCard } from "@/components/PricingCard";
 import { AFRICAN_COUNTRIES } from "@/lib/countries";
 import { StethoscopeIcon, ClipboardIcon, PillIcon, WarningIcon, SearchIcon, SirenIcon } from "@/components/icons";
-
-const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "+256 700 000000";
 
 export default function Home() {
   return (
@@ -19,8 +17,8 @@ export default function Home() {
             Clinical answers you can trust. Instantly.
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-cream/80">
-            Evidence-based decision support grounded in your country's national clinical guidelines. Ask over WhatsApp.
-            Get answers in seconds.
+            Evidence-based decision support grounded in your country's national clinical guidelines. Ask in the
+            Afya Drop app. Get answers in seconds — attach lab report photos too.
           </p>
           <div className="mt-10 flex flex-col gap-3 sm:flex-row">
             <Link href="/register" className="btn-primary text-lg">
@@ -36,9 +34,9 @@ export default function Home() {
       <section className="bg-cream py-16 sm:py-20">
         <div className="container-site grid grid-cols-2 gap-4 lg:grid-cols-4">
           <StatCard value="5 Free" label="Credits to start" sub="Every new account" />
-          <StatCard value="Seconds" label="Response time" sub="Straight to your WhatsApp" />
+          <StatCard value="Seconds" label="Response time" sub="Right in the Afya Drop app" />
           <StatCard value="National" label="Guideline" sub="Every answer cites your national guideline" />
-          <StatCard value="WhatsApp" label="No app needed" sub="Works on any phone" />
+          <StatCard value="In-app" label="Messaging & lab reports" sub="Chat and attach photos in one place" />
         </div>
       </section>
 
@@ -71,9 +69,9 @@ export default function Home() {
           <div className="mt-14 grid items-center gap-12 lg:grid-cols-[1fr_auto]">
             <div className="grid gap-6 md:grid-cols-3">
               {[
-              { n: "1", title: "Register", body: "Create your account with your medical qualification and practising licence number." },
+              { n: "1", title: "Register", body: "Create your account with email or Google, plus your medical qualification and practising licence number." },
               { n: "2", title: "Get 5 free credits", body: "Every new account starts with 5 free credits. Top up securely with mobile money via PesaPal when you need more." },
-              { n: "3", title: "Ask on WhatsApp", body: `Send any clinical question to ${WHATSAPP_NUMBER} and get a guideline-grounded answer in seconds.` },
+              { n: "3", title: "Ask in the app", body: "Send any clinical question — and attach lab report photos — right in the Afya Drop app to get a guideline-grounded answer in seconds." },
               ].map((s) => (
                 <div key={s.n} className="card p-8">
                   <div className="flex h-12 w-12 items-center justify-center rounded-full bg-sage font-heading text-xl font-bold text-teal">{s.n}</div>
@@ -82,7 +80,7 @@ export default function Home() {
                 </div>
               ))}
             </div>
-            <WhatsAppMockup />
+            <AppMockup />
           </div>
         </div>
       </section>
@@ -94,7 +92,7 @@ export default function Home() {
             <ul className="mt-8 space-y-5">
               {[
                 { title: "Your country's guideline", body: "Answers come strictly from your own national clinical guideline and other references our admins upload — never from unverified external sources." },
-                { title: "Made for Africa", body: "Works over WhatsApp on any phone, priced for local realities, designed around local qualifications and prescribing practice." },
+                { title: "Made for Africa", body: "Works from the Afya Drop app, priced for local realities, designed around local qualifications and prescribing practice." },
                 { title: "Safe by design", body: "Every answer carries a decision-support disclaimer. If the guidelines don't cover a question, Afya Drop says so." },
               ].map((f) => (
                 <li key={f.title} className="flex gap-4">
@@ -109,8 +107,8 @@ export default function Home() {
           </div>
           <div className="card flex min-h-[280px] items-center justify-center bg-teal p-10 text-center">
             <div>
-              <div className="font-heading text-5xl font-bold text-sage">{WHATSAPP_NUMBER}</div>
-              <p className="mt-4 text-cream/80">Save the number. Ask anything clinical.<br />That's the whole product.</p>
+              <div className="font-heading text-4xl font-bold text-sage sm:text-5xl">Afya Drop App</div>
+              <p className="mt-4 text-cream/80">Chat, attach a lab report photo, ask anything clinical.<br />That's the whole product.</p>
             </div>
           </div>
         </div>

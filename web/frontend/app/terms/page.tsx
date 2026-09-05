@@ -9,14 +9,14 @@ const sections: Array<{ title: string; body: string[] }> = [
   {
     title: "1. The service",
     body: [
-      "Afya Drop is a clinical decision-support assistant for qualified medical professionals across Africa. You ask clinical questions over WhatsApp; answers are generated strictly from your country's national clinical guidelines and other reference documents we make available.",
+      "Afya Drop is a clinical decision-support assistant for qualified medical professionals across Africa. You ask clinical questions in the Afya Drop mobile app — including attaching lab report photos — and answers are generated strictly from your country's national clinical guidelines and other reference documents we make available.",
       "Access is prepaid using credits purchased through our website (afyadrop.com). New accounts receive 5 free credits.",
     ],
   },
   {
     title: "2. Eligibility & registration",
     body: [
-      "You must be a qualified, licensed medical professional to use Afya Drop. During registration you provide your medical qualification and practising licence number, and verify your WhatsApp number.",
+      "You must be a qualified, licensed medical professional to use Afya Drop. During registration you sign in with your email or Google account and provide your medical qualification and practising licence number.",
       "You are responsible for the accuracy of your registration details and for keeping your account secure.",
       "We may suspend or terminate accounts used fraudulently, abusively, or by persons who are not qualified medical professionals.",
     ],
@@ -42,9 +42,9 @@ const sections: Array<{ title: string; body: string[] }> = [
   {
     title: "5. Acceptable use",
     body: [
-      "Do not send patient-identifiable information in your questions.",
+      "Do not send patient-identifiable information in your questions or lab report images.",
       "Do not misuse the service, attempt to reverse-engineer it, or use it for unlawful purposes.",
-      "You must have the right to use the WhatsApp number you register with.",
+      "You must have the right to use the email or Google account you register with.",
     ],
   },
   {

@@ -14,7 +14,7 @@ router.use(requireInternalSecret);
 // Main entry: answer a clinician's question using retrieved UCG context.
 // POST /api/ai/answer  { question, context: [{source, content}] }
 router.post("/api/ai/answer", async (req, res) => {
-  const { question, context } = req.body ?? {};
+  const { question, context, image_url } = req.body ?? {};
   if (typeof question !== "string" || !question.trim()) {
     res.status(400).json({ error: "question is required" });
     return;
@@ -29,7 +29,7 @@ router.post("/api/ai/answer", async (req, res) => {
         .slice(0, 12)
     : [];
   try {
-    const result = await answerClinicalQuestion(question, ctx);
+    const result = await answerClinicalQuestion(question, ctx, typeof image_url === "string" ? image_url : undefined);
     res.json(result);
   } catch (err) {
     res.status(502).json({ error: (err as Error).message });

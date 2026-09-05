@@ -10,10 +10,10 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 interface AdminUser {
   id: string;
   full_name: string;
-  phone: string;
+  email: string;
   qualification: string;
   licence_number: string;
-  phone_verified: boolean;
+  profile_completed: boolean;
   suspended: boolean;
   created_at: string;
   balance_credits: number;
@@ -217,7 +217,7 @@ export default function Admin() {
               <thead>
                 <tr className="border-b border-teal/10 text-xs uppercase tracking-wide text-muted">
                   <th className="py-2 pr-4">Name</th>
-                  <th className="py-2 pr-4">Phone</th>
+                  <th className="py-2 pr-4">Email</th>
                   <th className="py-2 pr-4">Qualification</th>
                   <th className="py-2 pr-4">Licence</th>
                   <th className="py-2 pr-4">Credits</th>
@@ -230,7 +230,7 @@ export default function Admin() {
                 {users.map((u) => (
                   <tr key={u.id} className="border-b border-teal/5 last:border-0">
                     <td className="py-3 pr-4 font-medium text-teal">{u.full_name}</td>
-                    <td className="py-3 pr-4">{u.phone}</td>
+                    <td className="py-3 pr-4">{u.email}</td>
                     <td className="py-3 pr-4">{u.qualification}</td>
                     <td className="py-3 pr-4">{u.licence_number}</td>
                     <td className="py-3 pr-4">{u.balance_credits}</td>
@@ -239,10 +239,10 @@ export default function Admin() {
                       <span
                         className={
                           "inline-flex rounded-full px-2.5 py-1 text-xs font-semibold " +
-                          (u.suspended ? "bg-red-100 text-red-700" : u.phone_verified ? "bg-sage/60 text-teal" : "bg-amber-100 text-amber-800")
+                          (u.suspended ? "bg-red-100 text-red-700" : u.profile_completed ? "bg-sage/60 text-teal" : "bg-amber-100 text-amber-800")
                         }
                       >
-                        {u.suspended ? "Suspended" : u.phone_verified ? "Active" : "Unverified"}
+                        {u.suspended ? "Suspended" : u.profile_completed ? "Active" : "Incomplete"}
                       </span>
                     </td>
                     <td className="py-3 pr-4 text-right">

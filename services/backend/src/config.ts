@@ -4,8 +4,7 @@ export const config = {
   supabaseServiceKey: process.env.SUPABASE_SERVICE_KEY ?? "",
   aiServiceUrl: (process.env.AFYA_DROP_AI_URL ?? "http://localhost:4001").replace(/\/$/, ""),
   internalSecret: process.env.INTERNAL_API_SECRET ?? "",
-  baileysUrl: (process.env.BAILEYS_URL ?? "http://localhost:4002").replace(/\/$/, ""),
-  adminPhone: process.env.ADMIN_PHONE ?? "", // E.164, receives weekly report
+  supabaseAnonKey: process.env.SUPABASE_ANON_KEY ?? "",
   siteUrl: (process.env.SITE_URL ?? "https://afyadrop.com").replace(/\/$/, ""),
   creditPriceUgx: Number(process.env.CREDIT_PRICE_UGX ?? 100),
   minPurchaseUgx: Number(process.env.MIN_PURCHASE_UGX ?? 1000),

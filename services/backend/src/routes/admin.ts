@@ -22,7 +22,7 @@ adminRouter.use(requireAdmin);
 adminRouter.get("/users", async (_req, res) => {
   const { data: users, error } = await supabase
     .from("users")
-    .select("id, full_name, phone, qualification, licence_number, phone_verified, role, suspended, created_at")
+    .select("id, full_name, email, qualification, licence_number, profile_completed, role, suspended, created_at")
     .order("created_at", { ascending: false });
   if (error) {
     res.status(500).json({ error: error.message });

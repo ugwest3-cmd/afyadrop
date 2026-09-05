@@ -1,35 +1,49 @@
 -- Afya Drop MVP schema (Supabase / PostgreSQL)
 -- The African medical assistant: clinical decision-support (RAG over each
 -- country's national clinical guidelines). Run in the Supabase SQL editor.
--- NOTE: if you already ran an older version, run migration_2026_09_05_africa.sql instead.
+-- NOTE: if you already ran an older version, run migration_2026_09_05_africa.sql
+-- and migration_2026_09_05_email_auth.sql instead.
+--
+-- Auth: handled by Supabase Auth (email OTP / magic link + Google OAuth).
+-- This table stores the clinician's profile and is keyed by the Supabase
+-- auth user id (auth.users.id), created via a trigger below.
 
 create extension if not exists "pgcrypto";
 create extension if not exists "vector";   -- pgvector for embeddings
 
 -- ============ USERS ============
 create table if not exists public.users (
-  id uuid primary key default gen_random_uuid(),
-  full_name text not null,
-  phone text not null unique,              -- E.164, e.g. +2567XXXXXXXX
+  id uuid primary key references auth.users(id) on delete cascade,
+  full_name text not null default '',
+  email text unique,
   country text not null default 'UG',      -- ISO country code (UG, KE, NG, ...) — determines which guideline is used
-  qualification text not null,             -- Pharmacist, Nurse, Clinical Officer, Doctor, ...
-  licence_number text not null,            -- practising licence number
-  phone_verified boolean not null default false,
+  qualification text,                      -- Pharmacist, Nurse, Clinical Officer, Doctor, ...
+  licence_number text,                     -- practising licence number
+  profile_completed boolean not null default false,
   role text not null default 'clinician',  -- clinician | admin
   suspended boolean not null default false,
   created_at timestamptz not null default now()
 );
 
--- OTP codes for phone verification during registration
-create table if not exists public.otp_codes (
-  id uuid primary key default gen_random_uuid(),
-  phone text not null,
-  code text not null,
-  expires_at timestamptz not null,
-  consumed boolean not null default false,
-  created_at timestamptz not null default now()
-);
-create index if not exists otp_codes_phone_idx on public.otp_codes (phone);
+-- Automatically create a public.users row whenever someone signs up via
+-- Supabase Auth (email OTP or Google). Profile fields are filled in
+-- afterwards via PATCH /auth/profile.
+create or replace function public.handle_new_auth_user()
+returns trigger
+language plpgsql security definer
+as $$
+begin
+  insert into public.users (id, email, full_name)
+  values (new.id, new.email, coalesce(new.raw_user_meta_data->>'full_name', ''))
+  on conflict (id) do nothing;
+  return new;
+end;
+$$;
+
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute function public.handle_new_auth_user();
 
 -- ============ WALLETS & CREDITS ============
 create table if not exists public.wallets (
@@ -101,7 +115,6 @@ create index if not exists qa_logs_user_idx on public.qa_logs (user_id);
 
 -- ============ ROW LEVEL SECURITY ============
 alter table public.users enable row level security;
-alter table public.otp_codes enable row level security;
 alter table public.wallets enable row level security;
 alter table public.credit_transactions enable row level security;
 alter table public.payments enable row level security;
@@ -109,8 +122,32 @@ alter table public.documents enable row level security;
 alter table public.document_chunks enable row level security;
 alter table public.qa_logs enable row level security;
 
--- Backend uses the SERVICE ROLE key (bypasses RLS). Add user policies later
--- only if you expose direct client access.
+-- Backend uses the SERVICE ROLE key (bypasses RLS) for all writes.
+-- These policies allow authenticated users to read their own data directly.
+
+create policy "Users can read own profile"
+  on public.users for select
+  using (auth.uid() = id);
+
+create policy "Users can update own profile"
+  on public.users for update
+  using (auth.uid() = id);
+
+create policy "Users can read own wallet"
+  on public.wallets for select
+  using (auth.uid() = user_id);
+
+create policy "Users can read own transactions"
+  on public.credit_transactions for select
+  using (auth.uid() = user_id);
+
+create policy "Users can read own qa_logs"
+  on public.qa_logs for select
+  using (auth.uid() = user_id);
+
+create policy "Users can read own payments"
+  on public.payments for select
+  using (auth.uid() = user_id);
 
 -- ============ FUNCTIONS ============
 -- Atomic credit spend (1 credit per clinical question).

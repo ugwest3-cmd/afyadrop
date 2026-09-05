@@ -22,8 +22,8 @@ export interface ContextChunk {
 }
 
 export const ai = {
-  answer: (question: string, context: ContextChunk[]) =>
-    call<{ answer: string; grounded: boolean }>("/api/ai/answer", { question, context }),
+  answer: (question: string, context: ContextChunk[], imageUrl?: string) =>
+    call<{ answer: string; grounded: boolean }>("/api/ai/answer", { question, context, image_url: imageUrl }),
   embed: (text: string) => call<{ embedding: number[] }>("/api/ai/embed", { text }),
   embedBatch: (texts: string[]) =>
     call<{ embeddings: number[][] }>("/api/ai/embed-batch", { texts }),
