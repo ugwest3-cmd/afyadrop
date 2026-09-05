@@ -1,6 +1,7 @@
 -- Afya Drop MVP schema (Supabase / PostgreSQL)
--- Clinical decision-support assistant (RAG over Uganda Clinical Guidelines).
--- Run in the Supabase SQL editor.
+-- The African medical assistant: clinical decision-support (RAG over each
+-- country's national clinical guidelines). Run in the Supabase SQL editor.
+-- NOTE: if you already ran an older version, run migration_2026_09_05_africa.sql instead.
 
 create extension if not exists "pgcrypto";
 create extension if not exists "vector";   -- pgvector for embeddings
@@ -62,7 +63,7 @@ create table if not exists public.payments (
 );
 create index if not exists payments_user_idx on public.payments (user_id);
 
--- ============ REFERENCE DOCUMENTS (UCG etc.) ============
+-- ============ REFERENCE DOCUMENTS (national clinical guidelines, etc.) ============
 create table if not exists public.documents (
   id uuid primary key default gen_random_uuid(),
   title text not null,                     -- e.g. "Uganda Clinical Guidelines 2023"
