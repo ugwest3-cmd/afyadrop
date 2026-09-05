@@ -43,7 +43,7 @@ const sections: Array<{ title: string; body: string[] }> = [
   {
     title: "5. Data sharing",
     body: [
-      "We share data only with the service providers needed to run Afya Drop: Supabase (database), Groq (AI inference), PesaPal (payments), and WhatsApp (message delivery). Each is bound by its own data-protection terms.",
+      "We share data only with the service providers needed to run Afya Drop: Supabase (database), our clinical answer service, PesaPal (payments), and WhatsApp (message delivery). Each is bound by its own data-protection terms.",
       "We may disclose information if required by applicable law or a lawful request by a regulator.",
     ],
   },

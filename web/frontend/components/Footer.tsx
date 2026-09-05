@@ -1,11 +1,12 @@
 import Link from "next/link";
+import { AFRICAN_COUNTRIES } from "@/lib/countries";
 
 export function Footer() {
   return (
     <footer className="border-t border-teal/10 bg-teal text-cream">
       <div className="container-site grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-4">
         <div className="lg:col-span-2">
-          <img src="/logo-full.png" alt="Afya Drop — AI Medical Assistant" className="h-16 w-auto" />
+          <img src="/logo-full.png" alt="Afya Drop — The African Medical Assistant" className="h-16 w-auto" />
           <p className="mt-3 max-w-sm text-sm text-cream/70">
             The African medical assistant. Clinical decision-support grounded in each country's
             national clinical guidelines, delivered over WhatsApp.
@@ -16,6 +17,15 @@ export function Footer() {
           </p>
         </div>
 
+        <div>
+          <div className="text-sm font-semibold uppercase tracking-wide text-sage">Supported countries</div>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {AFRICAN_COUNTRIES.map((country) => (
+              <img key={country.code} src={country.flagPath} alt={country.name} title={country.name} className="h-6 w-9 rounded object-cover opacity-90" />
+            ))}
+          </div>
+          <p className="mt-3 text-xs text-cream/60">Uganda is live. More East African countries are coming soon.</p>
+        </div>
         <div>
           <div className="text-sm font-semibold uppercase tracking-wide text-sage">Product</div>
           <ul className="mt-3 space-y-2 text-sm text-cream/80">
