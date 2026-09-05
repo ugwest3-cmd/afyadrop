@@ -1,9 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Input } from "@/components/Input";
+import { Button } from "@/components/Button";
+import { Card } from "@/components/Card";
 
-// Minimal MVP sign-in: identify by user_id or phone stored locally after registration.
 export default function Login() {
   const router = useRouter();
   const [userId, setUserId] = useState("");
@@ -15,24 +18,34 @@ export default function Login() {
       setError("Enter your user ID");
       return;
     }
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem("afyadrop_user_id", userId.trim());
-    }
+    window.localStorage.setItem("afyadrop_user_id", userId.trim());
     router.push("/dashboard");
   }
 
   return (
-    <main className="container">
-      <div className="brand">Afya Drop</div>
-      <div className="card">
-        <h2>Sign in</h2>
-        <form onSubmit={onSubmit}>
-          <label htmlFor="uid">User ID</label>
-          <input id="uid" value={userId} onChange={(e) => setUserId(e.target.value)} placeholder="your account id" required />
-          <div className="hint">For the MVP, paste the user ID you received after registering.</div>
-          <button>Continue</button>
-        </form>
-        {error && <div className="error">{error}</div>}
+    <main className="flex min-h-[70vh] items-center bg-cream py-16">
+      <div className="container-site max-w-md">
+        <Card>
+          <h1 className="text-2xl font-bold text-teal">Welcome back</h1>
+          <p className="mt-2 text-sm text-muted">Sign in with your Afya Drop user ID.</p>
+          <form onSubmit={onSubmit} className="mt-6 space-y-5">
+            <Input
+              id="uid"
+              label="User ID"
+              value={userId}
+              onChange={(e) => setUserId(e.target.value)}
+              placeholder="your account id"
+              hint="The ID you received after registering."
+              required
+            />
+            <Button type="submit" className="w-full">Continue</Button>
+            {error && <p className="error-text">{error}</p>}
+          </form>
+          <p className="mt-6 text-center text-sm text-muted">
+            Don't have an account?{" "}
+            <Link href="/register" className="font-semibold text-teal underline">Register</Link>
+          </p>
+        </Card>
       </div>
     </main>
   );

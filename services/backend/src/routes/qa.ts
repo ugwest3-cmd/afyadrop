@@ -3,6 +3,11 @@ import { supabase } from "../db.js";
 import { ai } from "../ai.js";
 import { sendWhatsAppText } from "../baileysClient.js";
 import { retrieveContext } from "./documents.js";
+import { config } from "../config.js";
+
+function topUpLink(userId: string): string {
+  return `${config.siteUrl}/dashboard?user=${userId}`;
+}
 
 export const qaRouter = Router();
 
@@ -18,17 +23,22 @@ qaRouter.post("/from-whatsapp", async (req, res) => {
   // 1. Resolve user
   const { data: user } = await supabase
     .from("users")
-    .select("id, phone_verified, full_name")
+    .select("id, phone_verified, full_name, suspended")
     .eq("phone", String(phone))
     .maybeSingle();
 
   if (!user) {
-    await sendWhatsAppText(String(phone), "Please register at https://afyadrop.ug to use Afya Drop.");
+    await sendWhatsAppText(String(phone), `Please register at ${config.siteUrl}/register to use Afya Drop.`);
     res.json({ ok: true, action: "unregistered" });
     return;
   }
+  if (user.suspended) {
+    await sendWhatsAppText(String(phone), "Your Afya Drop account is suspended. Please contact support.");
+    res.json({ ok: true, action: "suspended" });
+    return;
+  }
   if (!user.phone_verified) {
-    await sendWhatsAppText(String(phone), "Please verify your number on https://afyadrop.ug to continue.");
+    await sendWhatsAppText(String(phone), `Please verify your number at ${config.siteUrl} to continue.`);
     res.json({ ok: true, action: "unverified" });
     return;
   }
@@ -41,7 +51,10 @@ qaRouter.post("/from-whatsapp", async (req, res) => {
     .maybeSingle();
   const balance = wallet?.balance_credits ?? 0;
   if (balance < 1) {
-    await sendWhatsAppText(String(phone), "You have no credits. Top up at https://afyadrop.ug");
+    await sendWhatsAppText(
+      String(phone),
+      `You have no credits left. Top up here to keep asking questions: ${topUpLink(user.id)}`,
+    );
     res.json({ ok: true, action: "no_credits" });
     return;
   }
@@ -74,7 +87,11 @@ qaRouter.post("/from-whatsapp", async (req, res) => {
     grounded,
   });
 
-  // 6. Reply over WhatsApp
-  await sendWhatsAppText(String(phone), answer);
+  // 6. Reply over WhatsApp (with a top-up link if they just ran out)
+  let reply = answer;
+  if (typeof newBalance === "number" && newBalance === 0) {
+    reply += `\n\nThat was your last credit. Top up here: ${topUpLink(user.id)}`;
+  }
+  await sendWhatsAppText(String(phone), reply);
   res.json({ ok: true, action: "answered", grounded, balance: newBalance });
 });

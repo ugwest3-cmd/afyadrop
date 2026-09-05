@@ -14,6 +14,7 @@ create table if not exists public.users (
   licence_number text not null,            -- practising licence number
   phone_verified boolean not null default false,
   role text not null default 'clinician',  -- clinician | admin
+  suspended boolean not null default false,
   created_at timestamptz not null default now()
 );
 

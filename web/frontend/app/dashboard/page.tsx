@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
+import { Button } from "@/components/Button";
+import { Card } from "@/components/Card";
 
 const CREDIT_PRICE = 100; // UGX per credit
 const MIN_UGX = 1000;
@@ -10,7 +12,7 @@ const BUNDLES = [10, 25, 50, 100];
 export default function Dashboard() {
   const [userId, setUserId] = useState("");
   const [balance, setBalance] = useState<number | null>(null);
-  const [credits, setCredits] = useState(10);
+  const [credits, setCredits] = useState(25);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -39,27 +41,65 @@ export default function Dashboard() {
   }
 
   return (
-    <main className="container">
-      <div className="brand">Afya Drop</div>
-      <div className="card">
-        <h2>Your wallet</h2>
-        <div className="balance">{balance === null ? "—" : balance} <span className="hint">credits</span></div>
-      </div>
+    <main className="bg-cream py-14 sm:py-20">
+      <div className="container-site max-w-3xl">
+        <h1 className="text-3xl font-bold text-teal">Your wallet</h1>
 
-      <div className="card">
-        <h2>Buy credits</h2>
-        <form onSubmit={onBuy}>
-          <label htmlFor="credits">Credits</label>
-          <select id="credits" value={credits} onChange={(e) => setCredits(Number(e.target.value))}>
-            {BUNDLES.map((b) => (
-              <option key={b} value={b}>{b} credits — {(b * CREDIT_PRICE).toLocaleString()} UGX</option>
-            ))}
-          </select>
-          <div className="hint">1 credit = {CREDIT_PRICE} UGX · minimum {MIN_UGX.toLocaleString()} UGX · paid via PesaPal</div>
-          {belowMin && <div className="error">Minimum purchase is {MIN_UGX.toLocaleString()} UGX (10 credits).</div>}
-          <button disabled={loading || belowMin || !userId}>{loading ? "Redirecting…" : `Pay ${amount.toLocaleString()} UGX`}</button>
-        </form>
-        {error && <div className="error">{error}</div>}
+        {/* Balance */}
+        <Card className="mt-6 flex flex-col items-center bg-teal py-12 text-center">
+          <div className="font-heading text-6xl font-bold text-sage sm:text-7xl">
+            {balance === null ? "—" : balance}
+          </div>
+          <div className="mt-2 text-sm font-semibold uppercase tracking-wide text-cream/70">credits remaining</div>
+          {balance === 0 && (
+            <p className="mt-4 max-w-sm text-sm text-cream/70">
+              You're out of credits. Top up below to keep asking questions on WhatsApp.
+            </p>
+          )}
+        </Card>
+
+        {/* Buy credits */}
+        <Card className="mt-8">
+          <h2 className="text-xl font-bold text-teal">Buy credits</h2>
+          <p className="mt-1 text-sm text-muted">
+            1 credit = {CREDIT_PRICE} UGX · minimum {MIN_UGX.toLocaleString()} UGX · secure checkout via PesaPal
+          </p>
+
+          <form onSubmit={onBuy} className="mt-6">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              {BUNDLES.map((b) => {
+                const active = credits === b;
+                return (
+                  <button
+                    key={b}
+                    type="button"
+                    onClick={() => setCredits(b)}
+                    className={
+                      "rounded-xl border-2 p-4 text-center transition-all " +
+                      (active
+                        ? "border-teal bg-sage shadow-card"
+                        : "border-teal/10 bg-white hover:border-sage-500")
+                    }
+                  >
+                    <div className="font-heading text-2xl font-bold text-teal">{b}</div>
+                    <div className="text-xs font-medium uppercase tracking-wide text-muted">credits</div>
+                    <div className="mt-1 text-sm font-semibold text-teal">{(b * CREDIT_PRICE).toLocaleString()} UGX</div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {belowMin && (
+              <p className="error-text">Minimum purchase is {MIN_UGX.toLocaleString()} UGX (10 credits).</p>
+            )}
+            {error && <p className="error-text">{error}</p>}
+
+            <Button type="submit" loading={loading} disabled={belowMin || !userId} className="mt-6 w-full text-lg">
+              Pay {amount.toLocaleString()} UGX with PesaPal
+            </Button>
+            {!userId && <p className="hint mt-3 text-center">Please <a className="underline" href="/login">login</a> first.</p>}
+          </form>
+        </Card>
       </div>
     </main>
   );
