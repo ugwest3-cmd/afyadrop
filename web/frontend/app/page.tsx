@@ -6,6 +6,7 @@ import { UseCaseCard } from "@/components/UseCaseCard";
 import { WhatsAppMockup } from "@/components/WhatsAppMockup";
 import { PricingCard } from "@/components/PricingCard";
 import { AFRICAN_COUNTRIES } from "@/lib/countries";
+import { StethoscopeIcon, ClipboardIcon, PillIcon, WarningIcon, SearchIcon, SirenIcon } from "@/components/icons";
 
 const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "+256 700 000000";
 
@@ -36,7 +37,7 @@ export default function Home() {
         <div className="container-site grid grid-cols-2 gap-4 lg:grid-cols-4">
           <StatCard value="5 Free" label="Credits to start" sub="Every new account" />
           <StatCard value="Seconds" label="Response time" sub="Straight to your WhatsApp" />
-          <StatCard value="Your country's" label="Guideline" sub="Every answer cites your national guideline" />
+          <StatCard value="National" label="Guideline" sub="Every answer cites your national guideline" />
           <StatCard value="WhatsApp" label="No app needed" sub="Works on any phone" />
         </div>
       </section>
@@ -54,12 +55,12 @@ export default function Home() {
         <div className="container-site">
           <SectionHeading tagline="One tool, many moments" heading="What Afya Drop helps you do" />
           <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            <UseCaseCard icon="🩺" title="Diagnosis support">Describe symptoms and get guideline-based differential diagnosis suggestions.</UseCaseCard>
-            <UseCaseCard icon="📋" title="Treatment plans">Find evidence-based treatment protocols from your national guidelines.</UseCaseCard>
-            <UseCaseCard icon="💊" title="Drug dosing">Check accurate dosing guidance for adults and paediatric patients.</UseCaseCard>
-            <UseCaseCard icon="⚠" title="Drug interactions">Check contraindications and interactions before prescribing.</UseCaseCard>
-            <UseCaseCard icon="🔎" title="Medical conditions">Understand conditions with clear, practical guideline references.</UseCaseCard>
-            <UseCaseCard icon="🚨" title="Emergency protocols">Reach emergency management guidance quickly when every second matters.</UseCaseCard>
+            <UseCaseCard icon={<StethoscopeIcon />} title="Diagnosis support">Describe symptoms and get guideline-based differential diagnosis suggestions.</UseCaseCard>
+            <UseCaseCard icon={<ClipboardIcon />} title="Treatment plans">Find evidence-based treatment protocols from your national guidelines.</UseCaseCard>
+            <UseCaseCard icon={<PillIcon />} title="Drug dosing">Check accurate dosing guidance for adults and paediatric patients.</UseCaseCard>
+            <UseCaseCard icon={<WarningIcon />} title="Drug interactions">Check contraindications and interactions before prescribing.</UseCaseCard>
+            <UseCaseCard icon={<SearchIcon />} title="Medical conditions">Understand conditions with clear, practical guideline references.</UseCaseCard>
+            <UseCaseCard icon={<SirenIcon />} title="Emergency protocols">Reach emergency management guidance quickly when every second matters.</UseCaseCard>
           </div>
         </div>
       </section>

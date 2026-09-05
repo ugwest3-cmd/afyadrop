@@ -24,7 +24,7 @@ export function Footer() {
               <img key={country.code} src={country.flagPath} alt={country.name} title={country.name} className="h-6 w-9 rounded object-cover opacity-90" />
             ))}
           </div>
-          <p className="mt-3 text-xs text-cream/60">Uganda is live. More East African countries are coming soon.</p>
+          <p className="mt-3 text-xs text-cream/60">Live now in Uganda, Kenya, Tanzania, Rwanda, and Zambia.</p>
         </div>
         <div>
           <div className="text-sm font-semibold uppercase tracking-wide text-sage">Product</div>
