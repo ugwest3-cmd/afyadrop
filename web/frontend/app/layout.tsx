@@ -8,12 +8,12 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://afyadrop.com"),
   title: "Afya Drop — The African Medical Assistant",
   description:
-    "AI-powered clinical decision support grounded in each country's national clinical guidelines. Ask over WhatsApp, get trusted answers in seconds.",
+    "Clinical decision support grounded in each country's national clinical guidelines. Ask over WhatsApp, get trusted answers in seconds.",
   icons: { icon: "/logo-mark.png" },
   openGraph: {
     title: "Afya Drop — The African Medical Assistant",
     description:
-      "AI-powered clinical decision support grounded in each country's national clinical guidelines. Ask over WhatsApp, get trusted answers in seconds.",
+      "Clinical decision support grounded in each country's national clinical guidelines. Ask over WhatsApp, get trusted answers in seconds.",
     url: "https://afyadrop.com",
     siteName: "Afya Drop",
     images: [{ url: "/logo-full.png" }],

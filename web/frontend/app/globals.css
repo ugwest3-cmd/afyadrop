@@ -61,6 +61,16 @@ h1, h2, h3, h4 {
   .success-text {
     @apply mt-3 text-sm font-medium text-teal-700;
   }
+  .badge-live {
+    @apply rounded-full bg-coral/15 px-3 py-1 text-xs font-bold uppercase tracking-wide text-red-700;
+  }
+  .badge-soon {
+    @apply rounded-full bg-gold/15 px-3 py-1 text-xs font-bold uppercase tracking-wide text-amber-700;
+  }
+  .pattern-africa {
+    background-image: linear-gradient(30deg, rgba(211,236,178,0.06) 12%, transparent 12.5%, transparent 87%, rgba(211,236,178,0.06) 87.5%, rgba(211,236,178,0.06)), linear-gradient(150deg, rgba(211,236,178,0.06) 12%, transparent 12.5%, transparent 87%, rgba(211,236,178,0.06) 87.5%, rgba(211,236,178,0.06));
+    background-size: 44px 76px;
+  }
 }
 
 :focus-visible {

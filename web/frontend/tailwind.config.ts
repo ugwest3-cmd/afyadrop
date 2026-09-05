@@ -26,6 +26,9 @@ const config: Config = {
         ivory: "#F6F0E2",
         ink: "#0F172A",
         muted: "#64748B",
+        gold: "#F59E0B",
+        coral: "#EF6461",
+        sky: "#38BDF8",
       },
       fontFamily: {
         heading: ["Cabin", "ui-sans-serif", "system-ui", "sans-serif"],
@@ -41,6 +44,10 @@ const config: Config = {
       boxShadow: {
         card: "0 1px 2px rgba(0,40,44,0.05), 0 8px 24px rgba(0,40,44,0.06)",
       },
+      keyframes: {
+        "soft-pulse": { "0%, 100%": { transform: "scale(1)" }, "50%": { transform: "scale(1.03)" } },
+      },
+      animation: { "soft-pulse": "soft-pulse 3s ease-in-out infinite" },
     },
   },
   plugins: [],
