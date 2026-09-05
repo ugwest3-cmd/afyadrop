@@ -55,3 +55,6 @@ Copy each service's `.env.example` to `.env` and fill in the values.
 
 ## Deploy
 See the **Deployment Plan** section of `mvp for afyadrop.txt`.
+
+## Credits
+Country flag icons in `web/frontend/public/flags/` are from [flag-icons](https://github.com/lipis/flag-icons) by Panayiotis Lipiridis, MIT licensed.
