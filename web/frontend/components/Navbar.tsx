@@ -16,9 +16,9 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-50 border-b border-teal/10 bg-cream/90 backdrop-blur">
       <div className="container-site flex h-16 items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 font-heading text-xl font-bold tracking-tight text-teal">
-          <img src="/logo-mark.png" alt="Afya Drop" className="h-9 w-auto rounded-md bg-teal p-1" />
-          <span>Afya<span className="text-teal-700">Drop</span></span>
+        <Link href="/" className="flex items-center gap-2.5">
+          <img src="/logo-mark.png" alt="Afya Drop logo" className="h-9 w-auto" />
+          <span className="font-heading text-xl font-bold tracking-tight text-teal">AfyaDrop</span>
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">
