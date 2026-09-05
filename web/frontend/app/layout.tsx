@@ -6,12 +6,12 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://afyadrop.com"),
-  title: "Afya Drop — The African Medical Assistant",
+  title: "Afya Drop",
   description:
     "Clinical decision support grounded in each country's national clinical guidelines. Ask over WhatsApp, get trusted answers in seconds.",
   icons: { icon: "/logo-mark.png" },
   openGraph: {
-    title: "Afya Drop — The African Medical Assistant",
+    title: "Afya Drop",
     description:
       "Clinical decision support grounded in each country's national clinical guidelines. Ask over WhatsApp, get trusted answers in seconds.",
     url: "https://afyadrop.com",
@@ -28,7 +28,7 @@ const organizationSchema = {
   url: "https://afyadrop.com",
   logo: "https://afyadrop.com/logo-full.png",
   description:
-    "The African medical assistant: clinical decision-support grounded in each country's national clinical guidelines, delivered over WhatsApp.",
+    "Clinical decision-support grounded in each country's national clinical guidelines, delivered over WhatsApp.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

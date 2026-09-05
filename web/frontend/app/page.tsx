@@ -14,9 +14,6 @@ export default function Home() {
     <main>
       <section className="pattern-africa bg-teal text-cream">
         <div className="container-site flex flex-col items-center py-24 text-center sm:py-32">
-          <span className="rounded-full border border-sage/40 bg-sage/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-sage">
-            The African Medical Assistant
-          </span>
           <h1 className="mt-6 max-w-3xl text-4xl font-bold leading-tight sm:text-6xl">
             Clinical answers you can trust. Instantly.
           </h1>

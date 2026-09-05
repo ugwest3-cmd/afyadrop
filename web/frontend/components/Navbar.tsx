@@ -19,7 +19,7 @@ export function Navbar() {
     <header className="sticky top-0 z-50 border-b border-teal/10 bg-cream/90 backdrop-blur">
       <div className="container-site flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center gap-2.5">
-          <img src="/logo-mark.png" alt="Afya Drop logo" className="h-9 w-auto" />
+          <img src="/logo-mark.png" alt="Afya Drop" className="h-9 w-auto" />
           <span className="font-heading text-xl font-bold tracking-tight text-teal">AfyaDrop</span>
         </Link>
 
