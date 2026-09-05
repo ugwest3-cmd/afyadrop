@@ -21,15 +21,24 @@ async function get<T>(path: string): Promise<T> {
 export interface RegisterInput {
   full_name: string;
   phone: string;
+  country: string;
   qualification: string;
   licence_number: string;
+}
+
+export interface Country {
+  code: string;
+  name: string;
+  dial: string;
+  guidelineName: string;
 }
 
 export const api = {
   register: (input: RegisterInput) =>
     post<{ ok: boolean; user_id: string; message: string }>("/auth/register", input),
-  verify: (phone: string, code: string) =>
-    post<{ ok: boolean }>("/auth/verify", { phone, code }),
+  verify: (phone: string, country: string, code: string) =>
+    post<{ ok: boolean }>("/auth/verify", { phone, country, code }),
+  countries: () => get<{ countries: Country[] }>("/auth/countries"),
   balance: (userId: string) =>
     get<{ balance_credits: number }>(`/credits/balance/${userId}`),
   purchase: (user_id: string, credits: number) =>

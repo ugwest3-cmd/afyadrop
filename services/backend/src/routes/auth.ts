@@ -1,33 +1,41 @@
 import { Router } from "express";
 import { supabase } from "../db.js";
 import { sendWhatsAppText } from "../baileysClient.js";
+import { normalizePhone, getCountry, COUNTRIES } from "../countries.js";
 
 export const authRouter = Router();
 
-function normalizeUgPhone(input: string): string | null {
-  const digits = input.replace(/\D/g, "");
-  if (/^0?7\d{8}$/.test(digits)) return `+256${digits.slice(-9)}`;
-  if (/^2567\d{8}$/.test(digits)) return `+${digits}`;
-  return null;
-}
+const FREE_SIGNUP_CREDITS = 5;
 
 function makeOtp(): string {
   return String(Math.floor(100000 + Math.random() * 900000));
 }
 
-// POST /auth/register  { full_name, phone, qualification, licence_number }
+// POST /auth/register  { full_name, phone, country, qualification, licence_number }
 authRouter.post("/register", async (req, res) => {
-  const { full_name, phone, qualification, licence_number } = req.body ?? {};
-  const normalized = normalizeUgPhone(String(phone ?? ""));
-  if (!full_name || !normalized || !qualification || !licence_number) {
-    res.status(400).json({ error: "full_name, a valid Ugandan phone, qualification and licence_number are required" });
+  const { full_name, phone, country, qualification, licence_number } = req.body ?? {};
+  const countryCode = String(country ?? "").toUpperCase();
+  const countryRow = getCountry(countryCode);
+  const normalized = normalizePhone(String(phone ?? ""), countryCode);
+
+  if (!full_name || !normalized || !countryRow || !qualification || !licence_number) {
+    res.status(400).json({
+      error: "full_name, country, a valid phone, qualification and licence_number are required",
+    });
     return;
   }
 
   const { data: user, error } = await supabase
     .from("users")
     .upsert(
-      { full_name, phone: normalized, qualification, licence_number, phone_verified: false },
+      {
+        full_name,
+        phone: normalized,
+        country: countryCode,
+        qualification,
+        licence_number,
+        phone_verified: false,
+      },
       { onConflict: "phone" },
     )
     .select()
@@ -47,12 +55,13 @@ authRouter.post("/register", async (req, res) => {
   res.json({ ok: true, user_id: user.id, message: "OTP sent over WhatsApp" });
 });
 
-// POST /auth/verify  { phone, code }
+// POST /auth/verify  { phone, country, code }
+// On successful verification, grant 5 free credits (once).
 authRouter.post("/verify", async (req, res) => {
-  const { phone, code } = req.body ?? {};
-  const normalized = normalizeUgPhone(String(phone ?? ""));
+  const { phone, country, code } = req.body ?? {};
+  const normalized = normalizePhone(String(phone ?? ""), String(country ?? ""));
   if (!normalized || !code) {
-    res.status(400).json({ error: "phone and code are required" });
+    res.status(400).json({ error: "phone, country and code are required" });
     return;
   }
 
@@ -80,5 +89,46 @@ authRouter.post("/verify", async (req, res) => {
     .select()
     .single();
 
+  // Grant 5 free credits once (only if this user has never had a bonus grant).
+  if (user) {
+    const { data: existing } = await supabase
+      .from("credit_transactions")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("type", "bonus")
+      .eq("reference", "signup_bonus")
+      .limit(1)
+      .maybeSingle();
+
+    if (!existing) {
+      await supabase.from("credit_transactions").insert({
+        user_id: user.id,
+        type: "bonus",
+        credits: FREE_SIGNUP_CREDITS,
+        reference: "signup_bonus",
+      });
+      // Upsert wallet balance
+      const { data: wallet } = await supabase
+        .from("wallets")
+        .select("balance_credits")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      const newBalance = (wallet?.balance_credits ?? 0) + FREE_SIGNUP_CREDITS;
+      await supabase
+        .from("wallets")
+        .upsert({ user_id: user.id, balance_credits: newBalance }, { onConflict: "user_id" });
+
+      await sendWhatsAppText(
+        normalized,
+        `Welcome to Afya Drop! You've received ${FREE_SIGNUP_CREDITS} free credits to get started. Ask any clinical question right here on WhatsApp.`,
+      );
+    }
+  }
+
   res.json({ ok: true, user });
+});
+
+// GET /auth/countries — list supported countries for the registration form
+authRouter.get("/countries", (_req, res) => {
+  res.json({ countries: COUNTRIES });
 });

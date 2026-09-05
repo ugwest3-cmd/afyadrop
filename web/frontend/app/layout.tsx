@@ -5,15 +5,18 @@ import { Footer } from "@/components/Footer";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Afya Drop — Clinical Decision Support for Uganda",
+  metadataBase: new URL("https://afyadrop.com"),
+  title: "Afya Drop — The African Medical Assistant",
   description:
-    "AI-powered clinical decision support grounded in the Uganda Clinical Guidelines. Ask over WhatsApp, get trusted answers in seconds.",
+    "AI-powered clinical decision support grounded in each country's national clinical guidelines. Ask over WhatsApp, get trusted answers in seconds.",
+  icons: { icon: "/logo-mark.png" },
   openGraph: {
-    title: "Afya Drop — Clinical Decision Support for Uganda",
+    title: "Afya Drop — The African Medical Assistant",
     description:
-      "AI-powered clinical decision support grounded in the Uganda Clinical Guidelines. Ask over WhatsApp, get trusted answers in seconds.",
+      "AI-powered clinical decision support grounded in each country's national clinical guidelines. Ask over WhatsApp, get trusted answers in seconds.",
     url: "https://afyadrop.com",
     siteName: "Afya Drop",
+    images: [{ url: "/logo-full.png" }],
     type: "website",
   },
 };
@@ -23,8 +26,9 @@ const organizationSchema = {
   "@type": "Organization",
   name: "Afya Drop",
   url: "https://afyadrop.com",
+  logo: "https://afyadrop.com/logo-full.png",
   description:
-    "Clinical decision-support assistant for Ugandan medical professionals, grounded in the Uganda Clinical Guidelines.",
+    "The African medical assistant: clinical decision-support grounded in each country's national clinical guidelines, delivered over WhatsApp.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

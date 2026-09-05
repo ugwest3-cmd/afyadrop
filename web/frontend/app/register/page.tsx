@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { api } from "@/lib/api";
+import { api, type Country } from "@/lib/api";
 import { Input, Select } from "@/components/Input";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
@@ -19,9 +19,11 @@ const QUALIFICATIONS = [
 ];
 
 export default function Register() {
+  const [countries, setCountries] = useState<Country[]>([]);
   const [form, setForm] = useState({
     full_name: "",
     phone: "",
+    country: "UG",
     qualification: QUALIFICATIONS[0],
     licence_number: "",
   });
@@ -30,6 +32,10 @@ export default function Register() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    api.countries().then((r) => setCountries(r.countries)).catch(() => setCountries([]));
+  }, []);
 
   function update(k: keyof typeof form) {
     return (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
@@ -56,7 +62,7 @@ export default function Register() {
     setError("");
     setLoading(true);
     try {
-      await api.verify(form.phone, code);
+      await api.verify(form.phone, form.country, code);
       setStep("done");
     } catch (err) {
       setError((err as Error).message);
@@ -73,12 +79,12 @@ export default function Register() {
           <span className="text-sm font-semibold uppercase tracking-[0.2em] text-teal-700">Register</span>
           <h1 className="mt-3 text-3xl font-bold text-teal sm:text-4xl">Create your account</h1>
           <p className="mt-4 max-w-md text-muted">
-            Join Ugandan clinicians getting instant, guideline-grounded clinical answers on WhatsApp.
+            Join medical professionals across Africa getting instant, guideline-grounded clinical answers on WhatsApp.
           </p>
           <ul className="mt-8 space-y-4">
             {[
-              "Answers grounded in the Uganda Clinical Guidelines",
-              "Pay per question — 1 credit = 100 UGX",
+              "Answers grounded in your country's national clinical guidelines",
+              "5 free credits when you register — then pay per question",
               "Delivered over WhatsApp — no app to install",
             ].map((t) => (
               <li key={t} className="flex gap-3 text-sm text-teal/90">
@@ -106,13 +112,19 @@ export default function Register() {
           {step === "form" && (
             <form onSubmit={onRegister} className="space-y-5">
               <Input id="full_name" label="Full name" value={form.full_name} onChange={update("full_name")} required />
+              <Select id="country" label="Country" value={form.country} onChange={update("country")} hint="We answer from your country's national clinical guideline.">
+                {countries.length === 0 && <option value="UG">Uganda</option>}
+                {countries.map((c) => (
+                  <option key={c.code} value={c.code}>{c.name}</option>
+                ))}
+              </Select>
               <Input
                 id="phone"
                 label="Mobile number (WhatsApp)"
                 placeholder="07XXXXXXXX"
                 value={form.phone}
                 onChange={update("phone")}
-                hint="Ugandan number — we will WhatsApp you a verification code."
+                hint="We will WhatsApp you a verification code."
                 required
               />
               <Select id="qualification" label="Medical qualification" value={form.qualification} onChange={update("qualification")}>
@@ -158,9 +170,10 @@ export default function Register() {
               <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-sage text-2xl text-teal">✓</div>
               <h2 className="mt-4 text-xl font-bold text-teal">You're verified</h2>
               <p className="mt-2 text-sm text-muted">
-                Your number is confirmed. Buy credits to start asking clinical questions on WhatsApp.
+                Your number is confirmed and we've added <strong>5 free credits</strong> to your wallet.
+                Start asking clinical questions on WhatsApp right away.
               </p>
-              <Link href="/dashboard" className="btn-primary mt-6 inline-flex">Buy credits →</Link>
+              <Link href="/dashboard" className="btn-primary mt-6 inline-flex">View wallet →</Link>
             </div>
           )}
         </Card>

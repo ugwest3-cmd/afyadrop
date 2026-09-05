@@ -10,6 +10,7 @@ create table if not exists public.users (
   id uuid primary key default gen_random_uuid(),
   full_name text not null,
   phone text not null unique,              -- E.164, e.g. +2567XXXXXXXX
+  country text not null default 'UG',      -- ISO country code (UG, KE, NG, ...) — determines which guideline is used
   qualification text not null,             -- Pharmacist, Nurse, Clinical Officer, Doctor, ...
   licence_number text not null,            -- practising licence number
   phone_verified boolean not null default false,
@@ -65,6 +66,7 @@ create index if not exists payments_user_idx on public.payments (user_id);
 create table if not exists public.documents (
   id uuid primary key default gen_random_uuid(),
   title text not null,                     -- e.g. "Uganda Clinical Guidelines 2023"
+  country text not null default 'UG',      -- ISO country code this guideline applies to
   source_type text not null default 'ucg', -- ucg | guideline | formulary | other
   file_path text,                          -- Supabase Storage path of the original file
   status text not null default 'processing', -- processing | ready | failed
@@ -146,11 +148,12 @@ begin
 end;
 $$;
 
--- Semantic search over the UCG chunks.
+-- Semantic search over guideline chunks, filtered to a single country.
 create or replace function public.match_document_chunks(
   query_embedding vector(1536),
   match_count int default 6,
-  match_threshold float default 0.0
+  match_threshold float default 0.0,
+  match_country text default null
 )
 returns table (id uuid, source_label text, content text, similarity float)
 language sql stable
@@ -158,7 +161,10 @@ as $$
   select c.id, c.source_label, c.content,
          1 - (c.embedding <=> query_embedding) as similarity
   from public.document_chunks c
+  join public.documents d on d.id = c.document_id
   where c.embedding is not null
+    and d.status = 'ready'
+    and (match_country is null or d.country = match_country)
     and 1 - (c.embedding <=> query_embedding) >= match_threshold
   order by c.embedding <=> query_embedding
   limit match_count;

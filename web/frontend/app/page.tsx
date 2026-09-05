@@ -11,13 +11,13 @@ export default function Home() {
       <section className="bg-teal text-cream">
         <div className="container-site flex flex-col items-center py-24 text-center sm:py-32">
           <span className="rounded-full border border-sage/40 bg-sage/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-sage">
-            For Ugandan Medical Professionals
+            The African Medical Assistant
           </span>
           <h1 className="mt-6 max-w-3xl text-4xl font-bold leading-tight sm:text-6xl">
             Clinical answers you can trust. Instantly.
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-cream/80">
-            AI-powered decision support grounded in the Uganda Clinical Guidelines. Ask over WhatsApp.
+            AI-powered decision support grounded in your country's national clinical guidelines. Ask over WhatsApp.
             Get answers in seconds.
           </p>
           <div className="mt-10 flex flex-col gap-3 sm:flex-row">
@@ -34,9 +34,9 @@ export default function Home() {
       {/* IMPACT STATS */}
       <section className="bg-cream py-16 sm:py-20">
         <div className="container-site grid grid-cols-2 gap-4 lg:grid-cols-4">
-          <StatCard value="100 UGX" label="Per question" sub="Pay only for what you use" />
+          <StatCard value="5 Free" label="Credits to start" sub="Every new account" />
           <StatCard value="Seconds" label="Response time" sub="Straight to your WhatsApp" />
-          <StatCard value="UCG" label="Grounded" sub="Every answer cites the guidelines" />
+          <StatCard value="Your country's" label="Guideline" sub="Every answer cites your national guideline" />
           <StatCard value="WhatsApp" label="No app needed" sub="Works on any phone" />
         </div>
       </section>
@@ -48,8 +48,8 @@ export default function Home() {
           <div className="mt-14 grid gap-6 md:grid-cols-3">
             {[
               { n: "1", title: "Register", body: "Create your account with your medical qualification and practising licence number." },
-              { n: "2", title: "Buy credits", body: "Top up securely with mobile money via PesaPal. 1 credit = 100 UGX." },
-              { n: "3", title: "Ask on WhatsApp", body: `Send any clinical question to ${WHATSAPP_NUMBER} and get a UCG-grounded answer in seconds.` },
+              { n: "2", title: "Get 5 free credits", body: "Every new account starts with 5 free credits. Top up securely with mobile money via PesaPal when you need more." },
+              { n: "3", title: "Ask on WhatsApp", body: `Send any clinical question to ${WHATSAPP_NUMBER} and get a guideline-grounded answer in seconds.` },
             ].map((s) => (
               <div key={s.n} className="card p-8">
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-sage font-heading text-xl font-bold text-teal">
@@ -67,11 +67,11 @@ export default function Home() {
       <section className="bg-cream py-20 sm:py-28">
         <div className="container-site grid items-center gap-12 lg:grid-cols-2">
           <div>
-            <SectionHeading align="left" tagline="Why Afya Drop" heading="Built for the realities of Ugandan healthcare" />
+            <SectionHeading align="left" tagline="Why Afya Drop" heading="Built for the realities of African healthcare" />
             <ul className="mt-8 space-y-5">
               {[
-                { title: "Trusted source", body: "Answers come strictly from the Uganda Clinical Guidelines and other references our admins upload — never from the model's general knowledge." },
-                { title: "Made for Uganda", body: "Priced in UGX, paid by mobile money, designed around local qualifications and prescribing practice." },
+                { title: "Your country's guideline", body: "Answers come strictly from your own national clinical guideline and other references our admins upload — never from the model's general knowledge." },
+                { title: "Made for Africa", body: "Works over WhatsApp on any phone, priced for local realities, designed around local qualifications and prescribing practice." },
                 { title: "Safe by design", body: "Every answer carries a decision-support disclaimer. If the guidelines don't cover a question, Afya Drop says so." },
               ].map((f) => (
                 <li key={f.title} className="flex gap-4">
@@ -97,7 +97,7 @@ export default function Home() {
       <section className="bg-sage py-16 sm:py-20">
         <div className="container-site flex flex-col items-center gap-6 text-center">
           <h2 className="max-w-2xl text-3xl font-bold text-teal sm:text-4xl">Ready to get started?</h2>
-          <p className="max-w-xl text-teal/80">Register in two minutes, buy your first credits, and ask your first question today.</p>
+          <p className="max-w-xl text-teal/80">Register in two minutes, get 5 free credits, and ask your first question today.</p>
           <Link href="/register" className="btn bg-teal text-cream hover:bg-teal-800 text-lg">
             Register Now →
           </Link>

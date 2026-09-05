@@ -9,8 +9,8 @@ const sections: Array<{ title: string; body: string[] }> = [
   {
     title: "1. The service",
     body: [
-      "Afya Drop is a clinical decision-support assistant for qualified medical professionals in Uganda. You ask clinical questions over WhatsApp; answers are generated strictly from the Uganda Clinical Guidelines (UCG) and other reference documents we make available.",
-      "Access is prepaid using credits purchased through our website (afyadrop.com).",
+      "Afya Drop is a clinical decision-support assistant for qualified medical professionals across Africa. You ask clinical questions over WhatsApp; answers are generated strictly from your country's national clinical guidelines and other reference documents we make available.",
+      "Access is prepaid using credits purchased through our website (afyadrop.com). New accounts receive 5 free credits.",
     ],
   },
   {
@@ -25,8 +25,8 @@ const sections: Array<{ title: string; body: string[] }> = [
     title: "3. Clinical disclaimer (important)",
     body: [
       "Afya Drop is a decision-SUPPORT tool. It does not provide a definitive diagnosis and is not a substitute for your professional clinical judgement.",
-      "Answers are grounded in the Uganda Clinical Guidelines and uploaded references, but may be incomplete or not cover every situation. You remain fully responsible for all clinical decisions and patient care.",
-      "If the guidelines do not cover a question, the assistant will say so. Always confirm against the full UCG and consult a senior clinician where appropriate.",
+      "Answers are grounded in your country's national clinical guidelines and uploaded references, but may be incomplete or not cover every situation. You remain fully responsible for all clinical decisions and patient care.",
+      "If the guidelines do not cover a question, the assistant will say so. Always confirm against the full guideline and consult a senior clinician where appropriate.",
       "Do not use Afya Drop for medical emergencies.",
     ],
   },
@@ -57,7 +57,7 @@ const sections: Array<{ title: string; body: string[] }> = [
     title: "7. Limitation of liability",
     body: [
       "To the maximum extent permitted by law, Afya Drop is provided \"as is\" and we are not liable for clinical outcomes, or for indirect or consequential losses arising from use of the service.",
-      "Nothing in these terms excludes liability that cannot be excluded under Ugandan law.",
+      "Nothing in these terms excludes liability that cannot be excluded under applicable law.",
     ],
   },
   {
@@ -69,7 +69,7 @@ const sections: Array<{ title: string; body: string[] }> = [
   {
     title: "9. Governing law & contact",
     body: [
-      "These terms are governed by the laws of Uganda.",
+      "These terms are governed by the laws applicable in your country of registration and, where relevant, the laws of Uganda (our place of incorporation).",
       "Questions: legal@afyadrop.com.",
     ],
   },

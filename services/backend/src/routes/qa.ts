@@ -23,7 +23,7 @@ qaRouter.post("/from-whatsapp", async (req, res) => {
   // 1. Resolve user
   const { data: user } = await supabase
     .from("users")
-    .select("id, phone_verified, full_name, suspended")
+    .select("id, phone_verified, full_name, suspended, country")
     .eq("phone", String(phone))
     .maybeSingle();
 
@@ -63,7 +63,7 @@ qaRouter.post("/from-whatsapp", async (req, res) => {
   let answer: string;
   let grounded = false;
   try {
-    const context = await retrieveContext(question);
+    const context = await retrieveContext(question, user.country ?? "UG");
     const result = await ai.answer(question, context);
     answer = result.answer;
     grounded = result.grounded;

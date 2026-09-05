@@ -23,6 +23,7 @@ interface AdminUser {
 interface Doc {
   id: string;
   title: string;
+  country: string;
   source_type: string;
   status: string;
   created_at: string;
@@ -43,8 +44,10 @@ export default function Admin() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [docs, setDocs] = useState<Doc[]>([]);
 
-  const [title, setTitle] = useState("Uganda Clinical Guidelines");
+  const [title, setTitle] = useState("");
   const [sourceType, setSourceType] = useState("ucg");
+  const [country, setCountry] = useState("UG");
+  const [countries, setCountries] = useState<Array<{ code: string; name: string }>>([]);
   const [text, setText] = useState("");
 
   const [error, setError] = useState("");
@@ -77,6 +80,10 @@ export default function Admin() {
   useEffect(() => {
     const saved = window.localStorage.getItem("afyadrop_admin_secret") ?? "";
     if (saved) setSecret(saved);
+    fetch(`${API}/auth/countries`)
+      .then((r) => r.json())
+      .then((d) => setCountries(d.countries ?? []))
+      .catch(() => setCountries([]));
   }, []);
 
   async function onLogin(e: React.FormEvent) {
@@ -121,7 +128,7 @@ export default function Admin() {
       const res = await fetch(`${API}/documents/ingest`, {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ title, source_type: sourceType, text }),
+        body: JSON.stringify({ title, country, source_type: sourceType, text }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? `Ingest failed (${res.status})`);
@@ -265,12 +272,18 @@ export default function Admin() {
             <Card>
               <h2 className="text-xl font-bold text-teal">Upload clinical reference</h2>
               <p className="mt-1 text-sm text-muted">
-                Upload the UCG (or another reference) as plain text. It becomes the ONLY source the assistant answers from.
+                Upload a country's national clinical guideline (or another reference) as plain text. It becomes the ONLY source clinicians in that country get answers from.
               </p>
               <form onSubmit={onIngest} className="mt-5 space-y-5">
-                <Input id="title" label="Document title" value={title} onChange={(e) => setTitle(e.target.value)} required />
+                <Select id="country" label="Country this guideline applies to" value={country} onChange={(e) => setCountry(e.target.value)}>
+                  {countries.length === 0 && <option value="UG">Uganda</option>}
+                  {countries.map((c) => (
+                    <option key={c.code} value={c.code}>{c.name}</option>
+                  ))}
+                </Select>
+                <Input id="title" label="Document title" placeholder="e.g. Uganda Clinical Guidelines 2023" value={title} onChange={(e) => setTitle(e.target.value)} required />
                 <Select id="stype" label="Type" value={sourceType} onChange={(e) => setSourceType(e.target.value)}>
-                  <option value="ucg">Uganda Clinical Guidelines (UCG)</option>
+                  <option value="ucg">National clinical guideline</option>
                   <option value="guideline">Other guideline</option>
                   <option value="formulary">Formulary</option>
                   <option value="other">Other</option>
@@ -296,7 +309,7 @@ export default function Admin() {
                   <li key={d.id} className="flex items-center justify-between rounded-lg border border-teal/10 bg-white px-4 py-3">
                     <div>
                       <div className="font-medium text-teal">{d.title}</div>
-                      <div className="text-xs text-muted">{d.source_type}</div>
+                      <div className="text-xs text-muted">{d.country} · {d.source_type}</div>
                     </div>
                     <span
                       className={

@@ -5,10 +5,10 @@ export function Footer() {
     <footer className="border-t border-teal/10 bg-teal text-cream">
       <div className="container-site grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-4">
         <div className="lg:col-span-2">
-          <div className="font-heading text-xl font-bold">AfyaDrop</div>
+          <img src="/logo-full.png" alt="Afya Drop — AI Medical Assistant" className="h-16 w-auto" />
           <p className="mt-3 max-w-sm text-sm text-cream/70">
-            Clinical decision-support for Ugandan medical professionals. Answers grounded in the
-            Uganda Clinical Guidelines, delivered over WhatsApp.
+            The African medical assistant. Clinical decision-support grounded in each country's
+            national clinical guidelines, delivered over WhatsApp.
           </p>
           <p className="mt-4 text-xs text-cream/50">
             Afya Drop is a decision-support aid for qualified clinicians. It is not a substitute for
