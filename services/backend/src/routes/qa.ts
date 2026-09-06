@@ -89,3 +89,17 @@ qaRouter.post("/ask", requireAuth, async (req, res) => {
     low_balance: typeof newBalance === "number" && newBalance === 0,
   });
 });
+
+// GET /qa/history — current user's Q&A history (requires Supabase session)
+qaRouter.get("/history", requireAuth, async (req, res) => {
+  const { data, error } = await supabase
+    .from("qa_logs")
+    .select("id, question, answer, grounded, created_at")
+    .eq("user_id", req.userId)
+    .order("created_at", { ascending: false });
+  if (error) {
+    res.status(500).json({ error: error.message });
+    return;
+  }
+  res.json({ items: data ?? [] });
+});
