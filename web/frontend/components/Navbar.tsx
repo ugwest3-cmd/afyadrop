@@ -1,19 +1,34 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { clsx } from "clsx";
-
-const LINKS = [
-  { href: "/", label: "Home" },
-  { href: "/#how-it-works", label: "How It Works" },
-  { href: "/#countries", label: "Countries" },
-  { href: "/#pricing", label: "Pricing" },
-  { href: "/login", label: "Login" },
-];
+import { supabase } from "@/lib/supabaseClient";
+import { useRouter } from "next/navigation";
 
 export function Navbar() {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [session, setSession] = useState<any>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => setSession(data.session));
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, sess) => {
+      setSession(sess);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  async function handleLogout() {
+    await supabase.auth.signOut();
+    router.push("/");
+  }
+
+  const LINKS = [
+    { href: "/", label: "Home" },
+    { href: "/#how-it-works", label: "How It Works" },
+    { href: "/#pricing", label: "Pricing" },
+  ];
 
   return (
     <header className="sticky top-0 z-50 border-b border-teal/10 bg-cream/90 backdrop-blur">
@@ -29,9 +44,25 @@ export function Navbar() {
               {l.label}
             </Link>
           ))}
-          <Link href="/register" className="btn-primary !px-5 !py-2.5 text-sm">
-            Register
-          </Link>
+          {session ? (
+            <>
+              <Link href="/dashboard" className="text-sm font-medium text-teal/80 transition-colors hover:text-teal">
+                Dashboard
+              </Link>
+              <button onClick={handleLogout} className="btn-primary !px-5 !py-2.5 text-sm bg-red-600 hover:bg-red-700 border-none">
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <Link href="/login" className="text-sm font-medium text-teal/80 transition-colors hover:text-teal">
+                Login
+              </Link>
+              <Link href="/register" className="btn-primary !px-5 !py-2.5 text-sm">
+                Register
+              </Link>
+            </>
+          )}
         </nav>
 
         <button
@@ -58,9 +89,25 @@ export function Navbar() {
               {l.label}
             </Link>
           ))}
-          <Link href="/register" onClick={() => setOpen(false)} className="btn-primary mt-2 text-sm">
-            Register
-          </Link>
+          {session ? (
+            <>
+              <Link href="/dashboard" onClick={() => setOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-teal/80 hover:bg-sage/40">
+                Dashboard
+              </Link>
+              <button onClick={() => { setOpen(false); handleLogout(); }} className="btn-primary mt-2 text-sm bg-red-600 hover:bg-red-700 border-none">
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <Link href="/login" onClick={() => setOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-teal/80 hover:bg-sage/40">
+                Login
+              </Link>
+              <Link href="/register" onClick={() => setOpen(false)} className="btn-primary mt-2 text-sm">
+                Register
+              </Link>
+            </>
+          )}
         </nav>
       </div>
     </header>
