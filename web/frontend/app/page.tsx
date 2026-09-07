@@ -40,14 +40,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="countries" className="bg-cream py-20 sm:py-28">
-        <div className="container-site">
-          <SectionHeading tagline="Global clinical support" heading="Clinical support that understands your region" />
-          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {FEATURED_COUNTRIES.map((country) => <CountryCard key={country.code} country={country} />)}
-          </div>
-        </div>
-      </section>
+
 
       <section id="use-cases" className="pattern-bg bg-ivory py-20 sm:py-28">
         <div className="container-site">

@@ -19,12 +19,7 @@ export function Footer() {
 
         <div>
           <div className="text-sm font-semibold uppercase tracking-wide text-sage">Global Availability</div>
-          <div className="mt-4 flex flex-wrap gap-2">
-            {FEATURED_COUNTRIES.filter(c => c.status === "Live").map((country) => (
-              <img key={country.code} src={country.flagPath} alt={country.name} title={country.name} className="h-6 w-9 rounded object-cover opacity-90" />
-            ))}
-          </div>
-          <p className="mt-3 text-xs text-cream/60">Available for clinical professionals worldwide.</p>
+          <p className="mt-3 text-sm text-cream/80">Available for clinical professionals worldwide.</p>
         </div>
         <div>
           <div className="text-sm font-semibold uppercase tracking-wide text-sage">Product</div>

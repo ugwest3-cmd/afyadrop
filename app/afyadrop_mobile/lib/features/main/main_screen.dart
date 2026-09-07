@@ -6,7 +6,7 @@ import '../../core/widgets/afya_bottom_nav.dart';
 import '../home/home_screen.dart';
 import '../history/history_screen.dart';
 import '../wallet/wallet_screen.dart';
-import '../guidelines/guidelines_screen.dart';
+import '../top_cases/top_cases_screen.dart';
 import '../lab_scan/lab_scan_screen.dart';
 
 class MainScreen extends StatefulWidget {
@@ -27,7 +27,7 @@ class _MainScreenState extends State<MainScreen> {
     super.initState();
     _screens = [
       HomeScreen(api: widget.api, showAppBar: false),
-      const GuidelinesScreen(),
+      const TopCasesScreen(),
       HistoryScreen(api: widget.api, showAppBar: false),
       WalletScreen(api: widget.api, showAppBar: false),
       const LabScanScreen(),
