@@ -19,18 +19,22 @@ export interface CreateCheckoutInput {
 
 export async function createCheckout(input: CreateCheckoutInput): Promise<{ url: string; invoiceId: string }> {
   try {
-    const collection = intasend.collection();
-    const resp = await collection.charge({
+    const payload: any = {
       first_name: "AfyaDrop",
       last_name: "User",
+      email: input.email || "user@afyadrop.com",
       amount: input.amount,
-      currency: input.currency ?? "USD",
-      email: input.email,
-      phone_number: input.phone,
+      currency: input.currency || "USD",
       api_ref: input.apiRef,
       redirect_url: input.redirectUrl || config.intasend.callbackUrl || "https://afyadrop.com/dashboard",
       host: config.siteUrl || "https://afyadrop.com",
-    });
+    };
+    if (input.phone) {
+      payload.phone_number = input.phone;
+    }
+
+    const collection = intasend.collection();
+    const resp = await collection.charge(payload);
     
     if (!resp.url || !resp.invoice_id) {
       throw new Error("Invalid response from IntaSend checkout");
