@@ -21,12 +21,15 @@ export async function createCheckout(input: CreateCheckoutInput): Promise<{ url:
   try {
     const collection = intasend.collection();
     const resp = await collection.charge({
+      first_name: "AfyaDrop",
+      last_name: "User",
       amount: input.amount,
       currency: input.currency ?? "USD",
       email: input.email,
       phone_number: input.phone,
       api_ref: input.apiRef,
-      redirect_url: input.redirectUrl ?? config.intasend.callbackUrl,
+      redirect_url: input.redirectUrl || config.intasend.callbackUrl || "https://afyadrop.com/dashboard",
+      host: config.siteUrl || "https://afyadrop.com",
     });
     
     if (!resp.url || !resp.invoice_id) {
