@@ -22,8 +22,8 @@ authRouter.get("/me", requireAuth, async (req, res) => {
 });
 
 // PATCH /auth/profile  { full_name, country, qualification, licence_number }
-// Completes the clinician profile after Supabase Auth sign-up (email OTP or
-// Google). Grants 5 free credits the first time a profile is completed.
+// Completes the clinician profile after Supabase Auth sign-up (email OTP).
+// Grants 5 free credits the first time a profile is completed.
 authRouter.patch("/profile", requireAuth, async (req, res) => {
   const { full_name, country, qualification, licence_number } = req.body ?? {};
   const countryCode = String(country ?? "").toUpperCase();

@@ -8,7 +8,6 @@ import { api, type Country } from "@/lib/api";
 import { Input, Select } from "@/components/Input";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
-import { GoogleIcon } from "@/components/icons";
 
 const QUALIFICATIONS = [
   "Pharmacist",
@@ -97,13 +96,7 @@ export default function Register() {
     }
   }
 
-  async function onGoogle() {
-    setError("");
-    await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}/auth/callback?next=/register` },
-    });
-  }
+
 
   async function onSubmitProfile(e: React.FormEvent) {
     e.preventDefault();
@@ -127,14 +120,14 @@ export default function Register() {
           <span className="text-sm font-semibold uppercase tracking-[0.2em] text-teal-700">Register</span>
           <h1 className="mt-3 text-3xl font-bold text-teal sm:text-4xl">Create your account</h1>
           <p className="mt-4 max-w-md text-muted">
-            Join medical professionals across Africa getting instant, guideline-grounded clinical answers in the
+            Join medical professionals worldwide getting instant, guideline-grounded clinical answers in the
             Afya Drop app.
           </p>
           <ul className="mt-8 space-y-4">
             {[
-              "Answers grounded in your country's national clinical guidelines",
+              "Answers grounded in evidence-based clinical guidelines",
               "5 free credits when you register — then pay per question",
-              "Sign in with email or Google — no phone number needed",
+              "Sign in with email — no phone number needed",
             ].map((t) => (
               <li key={t} className="flex gap-3 text-sm text-teal/90">
                 <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-sage text-xs font-bold text-teal">✓</span>
@@ -160,12 +153,6 @@ export default function Register() {
 
           {step === "account" && (
             <div className="space-y-5">
-              <Button type="button" variant="secondary" onClick={onGoogle} className="w-full justify-center gap-2">
-                <GoogleIcon /> Continue with Google
-              </Button>
-              <div className="flex items-center gap-3 text-xs font-semibold uppercase text-muted">
-                <span className="h-px flex-1 bg-teal/10" /> or <span className="h-px flex-1 bg-teal/10" />
-              </div>
               <form onSubmit={onSendOtp} className="space-y-5">
                 <Input
                   id="email"
@@ -208,8 +195,8 @@ export default function Register() {
             <form onSubmit={onSubmitProfile} className="space-y-5">
               <p className="text-sm text-muted">Tell us about your practice to finish setting up your account.</p>
               <Input id="full_name" label="Full name" value={profile.full_name} onChange={updateProfile("full_name")} required />
-              <Select id="country" label="Country" value={profile.country} onChange={updateProfile("country")} hint="We answer from your country's national clinical guideline.">
-                {countries.length === 0 && <option value="UG">Uganda</option>}
+              <Select id="country" label="Country" value={profile.country} onChange={updateProfile("country")} hint="We aim to answer from your region's clinical guidelines where available.">
+                {countries.length === 0 && <option value="US">United States</option>}
                 {countries.map((c) => (
                   <option key={c.code} value={c.code}>{c.name}</option>
                 ))}

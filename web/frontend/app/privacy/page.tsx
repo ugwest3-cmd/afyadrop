@@ -9,16 +9,16 @@ const sections: Array<{ title: string; body: string[] }> = [
   {
     title: "1. Who we are",
     body: [
-      "Afya Drop (\"we\", \"us\", \"our\") provides a clinical decision-support assistant for qualified medical professionals across Africa, accessible via the Afya Drop mobile app. Our website is afyadrop.com.",
+      "Afya Drop (\"we\", \"us\", \"our\") provides a clinical decision-support assistant for qualified medical professionals worldwide, accessible via the Afya Drop mobile app. Our website is afyadrop.com.",
       "This Privacy Policy explains what information we collect, why, and how we protect it.",
     ],
   },
   {
     title: "2. Information we collect",
     body: [
-      "Account information: full name, email address (or Google account), country, medical qualification, and practising licence number, provided when you register.",
+      "Account information: full name, email address, country, medical qualification, and practising licence number, provided when you register.",
       "Usage data: the clinical questions you ask, any lab report photos you attach, the answers returned, and timestamps (our Q&A log).",
-      "Payment data: credit purchases are processed by PesaPal. We store the transaction amount, credits purchased, and status — we do not store your mobile money PIN or card details.",
+      "Payment data: credit purchases are processed by IntaSend. We store the transaction amount, credits purchased, and status — we do not store your payment details.",
       "Technical data: basic device/browser information and cookies needed to operate the website and app.",
     ],
   },
@@ -43,7 +43,7 @@ const sections: Array<{ title: string; body: string[] }> = [
   {
     title: "5. Data sharing",
     body: [
-      "We share data only with the service providers needed to run Afya Drop: Supabase (database & authentication, including Google sign-in), our clinical answer service, and PesaPal (payments). Each is bound by its own data-protection terms.",
+      "We share data only with the service providers needed to run Afya Drop: Supabase (database & authentication), our clinical answer service, and IntaSend (payments). Each is bound by its own data-protection terms.",
       "We may disclose information if required by applicable law or a lawful request by a regulator.",
     ],
   },
@@ -65,7 +65,7 @@ const sections: Array<{ title: string; body: string[] }> = [
     title: "8. Contact",
     body: [
       "Questions about this policy: privacy@afyadrop.com.",
-      "This policy is governed by applicable data-protection law, including Uganda's Data Protection and Privacy Act, 2019, and the equivalent laws of your country.",
+      "This policy is governed by applicable data-protection law in your jurisdiction.",
     ],
   },
   {

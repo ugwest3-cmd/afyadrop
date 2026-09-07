@@ -31,9 +31,8 @@ function CallbackInner() {
   );
 }
 
-// Handles the redirect back from Google OAuth. Supabase's client library
-// automatically parses the access token from the URL hash and stores the
-// session (detectSessionInUrl: true), so we just wait for it then redirect.
+// Handles the redirect back from email magic links. Supabase's client library
+// automatically exchanges the code in the URL hash for a session cookie.
 export default function AuthCallback() {
   return (
     <Suspense fallback={<main className="flex min-h-[70vh] items-center justify-center bg-cream" />}>

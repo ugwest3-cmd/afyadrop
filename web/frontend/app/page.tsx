@@ -5,19 +5,19 @@ import { CountryCard } from "@/components/CountryCard";
 import { UseCaseCard } from "@/components/UseCaseCard";
 import { AppMockup } from "@/components/AppMockup";
 import { PricingCard } from "@/components/PricingCard";
-import { AFRICAN_COUNTRIES } from "@/lib/countries";
+import { FEATURED_COUNTRIES } from "@/lib/countries";
 import { StethoscopeIcon, ClipboardIcon, PillIcon, WarningIcon, SearchIcon, SirenIcon } from "@/components/icons";
 
 export default function Home() {
   return (
     <main>
-      <section className="pattern-africa bg-teal text-cream">
+      <section className="pattern-bg bg-teal text-cream">
         <div className="container-site flex flex-col items-center py-24 text-center sm:py-32">
           <h1 className="mt-6 max-w-3xl text-4xl font-bold leading-tight sm:text-6xl">
             Clinical answers you can trust. Instantly.
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-cream/80">
-            Evidence-based decision support grounded in your country's national clinical guidelines. Ask in the
+            Evidence-based decision support grounded in clinical guidelines. Ask in the
             Afya Drop app. Get answers in seconds — attach lab report photos too.
           </p>
           <div className="mt-10 flex flex-col gap-3 sm:flex-row">
@@ -35,26 +35,26 @@ export default function Home() {
         <div className="container-site grid grid-cols-2 gap-4 lg:grid-cols-4">
           <StatCard value="5 Free" label="Credits to start" sub="Every new account" />
           <StatCard value="Seconds" label="Response time" sub="Right in the Afya Drop app" />
-          <StatCard value="National" label="Guideline" sub="Every answer cites your national guideline" />
+          <StatCard value="Evidence" label="Based" sub="Every answer cites clinical guidelines" />
           <StatCard value="In-app" label="Messaging & lab reports" sub="Chat and attach photos in one place" />
         </div>
       </section>
 
       <section id="countries" className="bg-cream py-20 sm:py-28">
         <div className="container-site">
-          <SectionHeading tagline="East Africa, connected" heading="Clinical support that understands your country" />
+          <SectionHeading tagline="Global clinical support" heading="Clinical support that understands your region" />
           <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {AFRICAN_COUNTRIES.map((country) => <CountryCard key={country.code} country={country} />)}
+            {FEATURED_COUNTRIES.map((country) => <CountryCard key={country.code} country={country} />)}
           </div>
         </div>
       </section>
 
-      <section id="use-cases" className="pattern-africa bg-ivory py-20 sm:py-28">
+      <section id="use-cases" className="pattern-bg bg-ivory py-20 sm:py-28">
         <div className="container-site">
           <SectionHeading tagline="One tool, many moments" heading="What Afya Drop helps you do" />
           <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             <UseCaseCard icon={<StethoscopeIcon />} title="Diagnosis support">Describe symptoms and get guideline-based differential diagnosis suggestions.</UseCaseCard>
-            <UseCaseCard icon={<ClipboardIcon />} title="Treatment plans">Find evidence-based treatment protocols from your national guidelines.</UseCaseCard>
+            <UseCaseCard icon={<ClipboardIcon />} title="Treatment plans">Find evidence-based treatment protocols from clinical guidelines.</UseCaseCard>
             <UseCaseCard icon={<PillIcon />} title="Drug dosing">Check accurate dosing guidance for adults and paediatric patients.</UseCaseCard>
             <UseCaseCard icon={<WarningIcon />} title="Drug interactions">Check contraindications and interactions before prescribing.</UseCaseCard>
             <UseCaseCard icon={<SearchIcon />} title="Medical conditions">Understand conditions with clear, practical guideline references.</UseCaseCard>
@@ -69,8 +69,8 @@ export default function Home() {
           <div className="mt-14 grid items-center gap-12 lg:grid-cols-[1fr_auto]">
             <div className="grid gap-6 md:grid-cols-3">
               {[
-              { n: "1", title: "Register", body: "Create your account with email or Google, plus your medical qualification and practising licence number." },
-              { n: "2", title: "Get 5 free credits", body: "Every new account starts with 5 free credits. Top up securely with mobile money via PesaPal when you need more." },
+              { n: "1", title: "Register", body: "Create your account with your email, plus your medical qualification and practising licence number." },
+              { n: "2", title: "Get 5 free credits", body: "Every new account starts with 5 free credits. Top up securely via IntaSend when you need more." },
               { n: "3", title: "Ask in the app", body: "Send any clinical question — and attach lab report photos — right in the Afya Drop app to get a guideline-grounded answer in seconds." },
               ].map((s) => (
                 <div key={s.n} className="card p-8">
@@ -88,11 +88,11 @@ export default function Home() {
       <section className="bg-cream py-20 sm:py-28">
         <div className="container-site grid items-center gap-12 lg:grid-cols-2">
           <div>
-            <SectionHeading align="left" tagline="Why Afya Drop" heading="Built for the realities of African healthcare" />
+            <SectionHeading align="left" tagline="Why Afya Drop" heading="Built for clinical professionals everywhere" />
             <ul className="mt-8 space-y-5">
               {[
-                { title: "Your country's guideline", body: "Answers come strictly from your own national clinical guideline and other references our admins upload — never from unverified external sources." },
-                { title: "Made for Africa", body: "Works from the Afya Drop app, priced for local realities, designed around local qualifications and prescribing practice." },
+                { title: "Evidence-based guidelines", body: "Answers come strictly from clinical guidelines and other references our admins upload — never from unverified external sources." },
+                { title: "Works globally", body: "Works from the Afya Drop app, priced affordably, designed around clinical qualifications and prescribing practice." },
                 { title: "Safe by design", body: "Every answer carries a decision-support disclaimer. If the guidelines don't cover a question, Afya Drop says so." },
               ].map((f) => (
                 <li key={f.title} className="flex gap-4">

@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { supabase } from "../db.js";
 import { config } from "../config.js";
-import { createPesapalOrder, getTransactionStatus } from "../pesapal.js";
+import { createCheckout } from "../intasend.js";
 import { requireAuth } from "../authMiddleware.js";
 
 export const creditsRouter = Router();
@@ -29,13 +29,13 @@ creditsRouter.post("/purchase", requireAuth, async (req, res) => {
     res.status(400).json({ error: "user_id and a positive integer credits are required" });
     return;
   }
-  const amountUgx = qty * config.creditPriceUgx;
-  if (amountUgx < config.minPurchaseUgx) {
-    res.status(400).json({ error: `minimum purchase is ${config.minPurchaseUgx} UGX` });
+  const amount = qty * config.creditPriceUsd;
+  if (amount < config.minPurchaseUsd) {
+    res.status(400).json({ error: `minimum purchase is $${config.minPurchaseUsd}` });
     return;
   }
 
-  const { data: user } = await supabase.from("users").select("full_name, email").eq("id", user_id).single();
+  const { data: user } = await supabase.from("users").select("email").eq("id", user_id).single();
   if (!user) {
     res.status(404).json({ error: "user not found" });
     return;
@@ -43,7 +43,7 @@ creditsRouter.post("/purchase", requireAuth, async (req, res) => {
 
   const { data: payment, error } = await supabase
     .from("payments")
-    .insert({ user_id, credits: qty, amount_ugx: amountUgx, status: "pending" })
+    .insert({ user_id, credits: qty, amount, currency: "USD", status: "pending" })
     .select()
     .single();
   if (error || !payment) {
@@ -52,41 +52,40 @@ creditsRouter.post("/purchase", requireAuth, async (req, res) => {
   }
 
   try {
-    const nameParts = String(user.full_name).trim().split(/\s+/);
-    const order = await createPesapalOrder({
-      paymentId: payment.id,
-      amountUgx,
-      description: `Afya Drop: ${qty} credits`,
-      email: user.email,
-      firstName: nameParts[0],
-      lastName: nameParts.slice(1).join(" "),
+    const order = await createCheckout({
+      amount,
+      currency: "USD",
+      email: user.email || "",
+      apiRef: payment.id,
     });
     await supabase
       .from("payments")
-      .update({ pesapal_tracking_id: order.trackingId, pesapal_merchant_ref: payment.id })
+      .update({ provider_tracking_id: order.invoiceId, provider_ref: payment.id })
       .eq("id", payment.id);
-    res.json({ payment_id: payment.id, redirect_url: order.redirectUrl });
+    res.json({ payment_id: payment.id, redirect_url: order.url });
   } catch (err) {
     await supabase.from("payments").update({ status: "failed" }).eq("id", payment.id);
     res.status(502).json({ error: (err as Error).message });
   }
 });
 
-// POST /credits/ipn   (PesaPal Instant Payment Notification)
-creditsRouter.post("/ipn", async (req, res) => {
-  const { OrderTrackingId, OrderMerchantReference } = req.body ?? req.query ?? {};
-  if (!OrderTrackingId) {
-    res.status(400).json({ error: "OrderTrackingId is required" });
+// POST /credits/webhook   (IntaSend Webhook)
+creditsRouter.post("/webhook", async (req, res) => {
+  // IntaSend sends data in req.body
+  const { invoice_id, state, value, account } = req.body ?? {};
+  
+  if (!invoice_id) {
+    res.status(400).json({ error: "invoice_id is required" });
     return;
   }
+
   try {
-    const status = await getTransactionStatus(String(OrderTrackingId));
-    const paid = status === "completed" || status === "paid";
+    const paid = state === "COMPLETE" || state === "PROCESSING";
 
     const { data: payment } = await supabase
       .from("payments")
       .select("*")
-      .eq("pesapal_tracking_id", String(OrderTrackingId))
+      .eq("provider_tracking_id", String(invoice_id))
       .maybeSingle();
 
     if (!payment) {
@@ -102,14 +101,15 @@ creditsRouter.post("/ipn", async (req, res) => {
       await supabase.rpc("add_credits", {
         p_user: payment.user_id,
         p_credits: payment.credits,
-        p_amount_ugx: payment.amount_ugx,
-        p_reference: payment.pesapal_tracking_id,
+        p_amount: payment.amount,
+        p_currency: payment.currency || "USD",
+        p_reference: payment.provider_tracking_id,
       });
-    } else if (!paid) {
+    } else if (state === "FAILED") {
       await supabase.from("payments").update({ status: "failed" }).eq("id", payment.id);
     }
 
-    res.json({ ok: true, status });
+    res.json({ ok: true, status: state });
   } catch (err) {
     res.status(502).json({ error: (err as Error).message });
   }

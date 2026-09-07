@@ -7,7 +7,6 @@ import { supabase } from "@/lib/supabaseClient";
 import { Input } from "@/components/Input";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
-import { GoogleIcon } from "@/components/icons";
 
 type Step = "email" | "otp";
 
@@ -57,28 +56,14 @@ export default function Login() {
     }
   }
 
-  async function onGoogle() {
-    setError("");
-    await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}/auth/callback?next=/dashboard` },
-    });
-  }
-
   return (
     <main className="flex min-h-[70vh] items-center bg-cream py-16">
       <div className="container-site max-w-md">
         <Card>
           <h1 className="text-2xl font-bold text-teal">Welcome back</h1>
-          <p className="mt-2 text-sm text-muted">Sign in with your email or Google account.</p>
+          <p className="mt-2 text-sm text-muted">Sign in with your email.</p>
 
           <div className="mt-6 space-y-5">
-            <Button type="button" variant="secondary" onClick={onGoogle} className="w-full justify-center gap-2">
-              <GoogleIcon /> Continue with Google
-            </Button>
-            <div className="flex items-center gap-3 text-xs font-semibold uppercase text-muted">
-              <span className="h-px flex-1 bg-teal/10" /> or <span className="h-px flex-1 bg-teal/10" />
-            </div>
 
             {step === "email" && (
               <form onSubmit={onSendOtp} className="space-y-5">

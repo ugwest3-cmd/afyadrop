@@ -8,12 +8,12 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://afyadrop.com"),
   title: "Afya Drop",
   description:
-    "Clinical decision support grounded in each country's national clinical guidelines. Ask in the Afya Drop app, get trusted answers in seconds.",
+    "Clinical decision support grounded in evidence-based clinical guidelines. Ask in the Afya Drop app, get trusted answers in seconds.",
   icons: { icon: "/logo-mark.png" },
   openGraph: {
     title: "Afya Drop",
     description:
-      "Clinical decision support grounded in each country's national clinical guidelines. Ask in the Afya Drop app, get trusted answers in seconds.",
+      "Clinical decision support grounded in evidence-based clinical guidelines. Ask in the Afya Drop app, get trusted answers in seconds.",
     url: "https://afyadrop.com",
     siteName: "Afya Drop",
     images: [{ url: "/logo-full.png" }],
@@ -28,7 +28,7 @@ const organizationSchema = {
   url: "https://afyadrop.com",
   logo: "https://afyadrop.com/logo-full.png",
   description:
-    "Clinical decision-support grounded in each country's national clinical guidelines, delivered through the Afya Drop mobile app.",
+    "Clinical decision-support grounded in evidence-based clinical guidelines, delivered through the Afya Drop mobile app.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

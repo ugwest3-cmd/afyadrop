@@ -9,14 +9,14 @@ const sections: Array<{ title: string; body: string[] }> = [
   {
     title: "1. The service",
     body: [
-      "Afya Drop is a clinical decision-support assistant for qualified medical professionals across Africa. You ask clinical questions in the Afya Drop mobile app — including attaching lab report photos — and answers are generated strictly from your country's national clinical guidelines and other reference documents we make available.",
+      "Afya Drop is a clinical decision-support assistant for qualified medical professionals worldwide. You ask clinical questions in the Afya Drop mobile app — including attaching lab report photos — and answers are generated strictly from clinical guidelines and other reference documents we make available.",
       "Access is prepaid using credits purchased through our website (afyadrop.com). New accounts receive 5 free credits.",
     ],
   },
   {
     title: "2. Eligibility & registration",
     body: [
-      "You must be a qualified, licensed medical professional to use Afya Drop. During registration you sign in with your email or Google account and provide your medical qualification and practising licence number.",
+      "You must be a qualified, licensed medical professional to use Afya Drop. During registration you sign in with your email and provide your medical qualification and practising licence number.",
       "You are responsible for the accuracy of your registration details and for keeping your account secure.",
       "We may suspend or terminate accounts used fraudulently, abusively, or by persons who are not qualified medical professionals.",
     ],
@@ -25,7 +25,8 @@ const sections: Array<{ title: string; body: string[] }> = [
     title: "3. Clinical disclaimer (important)",
     body: [
       "Afya Drop is a decision-SUPPORT tool. It does not provide a definitive diagnosis and is not a substitute for your professional clinical judgement.",
-      "Answers are grounded in your country's national clinical guidelines and uploaded references, but may be incomplete or not cover every situation. You remain fully responsible for all clinical decisions and patient care.",
+      "Afya Drop does NOT provide medical advice. You must use your own clinical judgement and verify all answers against your region's official guidelines before treating a patient. We are not liable for any clinical decisions made using the app.",
+      "Answers are grounded in clinical guidelines and uploaded references, but may be incomplete or not cover every situation. You remain fully responsible for all clinical decisions and patient care.",
       "If the guidelines do not cover a question, the assistant will say so. Always confirm against the full guideline and consult a senior clinician where appropriate.",
       "Do not use Afya Drop for medical emergencies.",
     ],
@@ -33,10 +34,11 @@ const sections: Array<{ title: string; body: string[] }> = [
   {
     title: "4. Credits & payments",
     body: [
-      "1 credit = 100 UGX. Minimum purchase is 1,000 UGX (10 credits).",
+      "You need prepaid credits to ask questions (1 credit = 1 question).",
+      "1 credit = $0.10 USD. Minimum purchase is $1.00 USD (10 credits).",
       "Each clinical question answered costs 1 credit. A credit is deducted only when an answer is successfully delivered.",
       "Credits are non-transferable and, except where required by law, non-refundable.",
-      "Payments are processed by PesaPal. We do not store your mobile money PIN or card details.",
+      "Payments are processed by IntaSend. We do not store your payment details.",
     ],
   },
   {
@@ -44,13 +46,13 @@ const sections: Array<{ title: string; body: string[] }> = [
     body: [
       "Do not send patient-identifiable information in your questions or lab report images.",
       "Do not misuse the service, attempt to reverse-engineer it, or use it for unlawful purposes.",
-      "You must have the right to use the email or Google account you register with.",
+      "You must have the right to use the email account you register with.",
     ],
   },
   {
     title: "6. Intellectual property",
     body: [
-      "The Afya Drop name, logo, website, and underlying software are our property. The Uganda Clinical Guidelines remain the property of their respective rights holder.",
+      "The Afya Drop name, logo, website, and underlying software are our property. The clinical guidelines remain the property of their respective rights holders.",
     ],
   },
   {

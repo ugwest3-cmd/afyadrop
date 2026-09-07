@@ -1,24 +1,23 @@
-// Supported African countries. Each has a default clinical guideline that admins upload.
+// Supported countries. Each has a default clinical guideline that admins upload.
 // dial: country calling code. localLen: typical national significant number length (without dial code).
 
 export interface Country {
   code: string;      // ISO 3166-1 alpha-2
   name: string;
-  dial: string;      // e.g. "256"
+  dial: string;      // e.g. "1" or "44" or "256"
   guidelineName: string; // display name of the national clinical guideline
 }
 
 export const COUNTRIES: Country[] = [
+  { code: "US", name: "United States", dial: "1", guidelineName: "US Clinical Guidelines" },
+  { code: "GB", name: "United Kingdom", dial: "44", guidelineName: "NICE Clinical Guidelines" },
+  { code: "IN", name: "India", dial: "91", guidelineName: "India Standard Treatment Guidelines" },
   { code: "UG", name: "Uganda", dial: "256", guidelineName: "Uganda Clinical Guidelines (UCG)" },
   { code: "KE", name: "Kenya", dial: "254", guidelineName: "Kenya Clinical Guidelines" },
   { code: "TZ", name: "Tanzania", dial: "255", guidelineName: "Tanzania Standard Treatment Guidelines" },
   { code: "RW", name: "Rwanda", dial: "250", guidelineName: "Rwanda National Treatment Guidelines" },
   { code: "NG", name: "Nigeria", dial: "234", guidelineName: "Nigeria National Guidelines" },
-  { code: "GH", name: "Ghana", dial: "233", guidelineName: "Ghana Standard Treatment Guidelines" },
   { code: "ZA", name: "South Africa", dial: "27", guidelineName: "South Africa Standard Treatment Guidelines" },
-  { code: "ZM", name: "Zambia", dial: "260", guidelineName: "Zambia Standard Treatment Guidelines" },
-  { code: "ZW", name: "Zimbabwe", dial: "263", guidelineName: "Zimbabwe Essential Medicines List & Guidelines" },
-  { code: "ET", name: "Ethiopia", dial: "251", guidelineName: "Ethiopia Standard Treatment Guidelines" },
 ];
 
 export function getCountry(code: string): Country | undefined {

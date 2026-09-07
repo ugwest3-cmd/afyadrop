@@ -1,10 +1,10 @@
 -- Afya Drop MVP schema (Supabase / PostgreSQL)
--- The African medical assistant: clinical decision-support (RAG over each
+-- The global medical assistant: clinical decision-support (RAG over each
 -- country's national clinical guidelines). Run in the Supabase SQL editor.
 -- NOTE: if you already ran an older version, run migration_2026_09_05_africa.sql
 -- and migration_2026_09_05_email_auth.sql instead.
 --
--- Auth: handled by Supabase Auth (email OTP / magic link + Google OAuth).
+-- Auth: handled by Supabase Auth (email OTP / magic link).
 -- This table stores the clinician's profile and is keyed by the Supabase
 -- auth user id (auth.users.id), created via a trigger below.
 
@@ -26,7 +26,7 @@ create table if not exists public.users (
 );
 
 -- Automatically create a public.users row whenever someone signs up via
--- Supabase Auth (email OTP or Google). Profile fields are filled in
+-- Supabase Auth (email OTP). Profile fields are filled in
 -- afterwards via PATCH /auth/profile.
 create or replace function public.handle_new_auth_user()
 returns trigger
@@ -57,20 +57,22 @@ create table if not exists public.credit_transactions (
   user_id uuid not null references public.users(id) on delete cascade,
   type text not null check (type in ('purchase','spend','refund','bonus')),
   credits integer not null,
-  amount_ugx integer,
+  amount integer,
+  currency text default 'USD',
   reference text,
   created_at timestamptz not null default now()
 );
 create index if not exists credit_tx_user_idx on public.credit_transactions (user_id);
 
--- ============ PAYMENTS (PesaPal) ============
+-- ============ PAYMENTS ============
 create table if not exists public.payments (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.users(id) on delete cascade,
   credits integer not null,
-  amount_ugx integer not null,
-  pesapal_tracking_id text,
-  pesapal_merchant_ref text,
+  amount integer not null,
+  currency text not null default 'USD',
+  provider_tracking_id text,
+  provider_ref text,
   status text not null default 'pending' check (status in ('pending','paid','failed')),
   created_at timestamptz not null default now(),
   paid_at timestamptz
@@ -168,8 +170,8 @@ begin
 end;
 $$;
 
--- Add credits after a successful PesaPal payment.
-create or replace function public.add_credits(p_user uuid, p_credits integer, p_amount_ugx integer, p_reference text default null)
+-- Add credits after a successful payment.
+create or replace function public.add_credits(p_user uuid, p_credits integer, p_amount integer, p_currency text default 'USD', p_reference text default null)
 returns integer
 language plpgsql security definer
 as $$
@@ -180,8 +182,8 @@ begin
   on conflict (user_id)
   do update set balance_credits = public.wallets.balance_credits + p_credits, updated_at = now()
   returning balance_credits into new_balance;
-  insert into public.credit_transactions (user_id, type, credits, amount_ugx, reference)
-  values (p_user, 'purchase', p_credits, p_amount_ugx, p_reference);
+  insert into public.credit_transactions (user_id, type, credits, amount, currency, reference)
+  values (p_user, 'purchase', p_credits, p_amount, p_currency, p_reference);
   return new_balance;
 end;
 $$;

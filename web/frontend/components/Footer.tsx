@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { AFRICAN_COUNTRIES } from "@/lib/countries";
+import { FEATURED_COUNTRIES } from "@/lib/countries";
 
 export function Footer() {
   return (
@@ -8,7 +8,7 @@ export function Footer() {
         <div className="lg:col-span-2">
           <img src="/logo-full.png" alt="Afya Drop" className="h-16 w-auto" />
           <p className="mt-3 max-w-sm text-sm text-cream/70">
-            Clinical decision-support grounded in each country's national clinical guidelines,
+            Clinical decision-support grounded in evidence-based clinical guidelines,
             delivered through the Afya Drop mobile app.
           </p>
           <p className="mt-4 text-xs text-cream/50">
@@ -18,13 +18,13 @@ export function Footer() {
         </div>
 
         <div>
-          <div className="text-sm font-semibold uppercase tracking-wide text-sage">Supported countries</div>
+          <div className="text-sm font-semibold uppercase tracking-wide text-sage">Global Availability</div>
           <div className="mt-4 flex flex-wrap gap-2">
-            {AFRICAN_COUNTRIES.map((country) => (
+            {FEATURED_COUNTRIES.filter(c => c.status === "Live").map((country) => (
               <img key={country.code} src={country.flagPath} alt={country.name} title={country.name} className="h-6 w-9 rounded object-cover opacity-90" />
             ))}
           </div>
-          <p className="mt-3 text-xs text-cream/60">Live now in Uganda, Kenya, Tanzania, Rwanda, and Zambia.</p>
+          <p className="mt-3 text-xs text-cream/60">Available for clinical professionals worldwide.</p>
         </div>
         <div>
           <div className="text-sm font-semibold uppercase tracking-wide text-sage">Product</div>

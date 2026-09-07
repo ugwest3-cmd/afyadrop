@@ -1,24 +1,25 @@
 # Afya Drop
 
-A clinical decision-support AI assistant for medical personnel across Africa. Clinicians sign in with
-email OTP or Google in the **Afya Drop Mobile App**, ask diagnosis/treatment questions (and attach lab
-report photos), and get answers generated **strictly from their country's national clinical
-guidelines** and other reference documents uploaded by admins.
+A clinical decision-support AI assistant for medical professionals worldwide. Clinicians sign in with
+email OTP in the **Afya Drop Mobile App**, ask diagnosis/treatment questions (and attach lab
+report photos), and get answers generated **strictly from clinical guidelines** and other reference documents uploaded by admins.
 
-Monetised with prepaid credits (1 credit = 100 UGX, min 1,000 UGX) paid via **PesaPal**.
+Monetised with prepaid credits (1 credit = $0.10 USD, min $1.00 USD) paid via **IntaSend**.
 
 ## Stack
-- **Supabase** — Auth (email OTP + Google OAuth) + PostgreSQL + pgvector (users, wallets, credits, payments, documents, chunks, Q&A log)
+- **Supabase** — Auth (email OTP) + PostgreSQL + pgvector (users, wallets, credits, payments, documents, chunks, Q&A log)
 - **Vercel** — Next.js website: register, buy credits, admin document upload
 - **Railway** — two Node.js/TypeScript services:
-  - `services/backend` — profile management, wallets, credits, PesaPal IPN, document ingestion, retrieval, in-app Q&A routing (only service that talks to Supabase). Verifies the Supabase Auth JWT on every protected route.
+  - `services/backend` — profile management, wallets, credits, IntaSend webhooks, document ingestion, retrieval, in-app Q&A routing (only service that talks to Supabase). Verifies the Supabase Auth JWT on every protected route.
   - `services/ai-service` — Groq clinical answering + embeddings (no DB access — Option A)
 
 ## Repo layout
 ```
+app/
+  afyadrop_mobile/ Flutter Android/iOS mobile app
 services/
   ai-service/     Groq clinical Q&A + embeddings
-  backend/        profile, credits/PesaPal, RAG ingestion + retrieval, in-app Q&A routing
+  backend/        profile, credits/IntaSend, RAG ingestion + retrieval, in-app Q&A routing
 web/
   frontend/       Next.js (register, login, dashboard, admin upload)
 supabase/
@@ -32,7 +33,7 @@ npm install
 # Terminal 1 — AI service (needs GROQ_API_KEY)
 npm run dev:ai
 
-# Terminal 2 — backend (needs Supabase + PesaPal + service URLs)
+# Terminal 2 — backend (needs Supabase + IntaSend + service URLs)
 npm run dev:backend
 
 # Terminal 3 — website
@@ -44,14 +45,11 @@ Copy each service's `.env.example` to `.env` and fill in the values. For the fro
 
 ### Supabase Auth setup
 1. In the Supabase dashboard, enable **Email** provider with OTP (magic link/6-digit code) sign-in.
-2. Enable the **Google** provider under Authentication → Providers, using OAuth credentials from the
-   Google Cloud Console. Add `https://<your-site>/auth/callback` as an authorized redirect URI (and
-   `http://localhost:3000/auth/callback` for local dev).
-3. Run `supabase/schema.sql` (fresh project) or the migration files (existing project) so that a
+2. Run `supabase/schema.sql` (fresh project) or the migration files (existing project) so that a
    `public.users` profile row is auto-created for every `auth.users` sign-up.
 
 ## The Q&A flow
-1. Clinician signs in with email OTP or Google in the Afya Drop app and asks a clinical question, optionally attaching a lab report photo.
+1. Clinician signs in with email OTP in the Afya Drop app and asks a clinical question, optionally attaching a lab report photo.
 2. The app calls backend `POST /qa/ask` with a Supabase session bearer token.
 3. Backend verifies the user + balance, embeds the question, runs a pgvector search over the country's guideline chunks.
 4. Backend sends `{question, context, image_url}` → ai-service `/api/ai/answer`.

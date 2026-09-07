@@ -1,7 +1,7 @@
 -- ============================================================
--- Afya Drop — MIGRATION: Email OTP + Google login (no phone)
--- Switches auth from custom phone/WhatsApp OTP to Supabase Auth
--- (email magic-link/OTP + Google OAuth). Run after the earlier
+-- Afya Drop — MIGRATION: Email OTP login
+-- Replaces old password-based logic with passwordless
+-- (email magic-link/OTP). Run after the earlier
 -- schema.sql / migration_2026_09_05_africa.sql have been applied.
 --
 -- This is SAFE to re-run: all statements use IF EXISTS / IF NOT EXISTS.
@@ -62,7 +62,7 @@ alter table public.users
 --   add constraint users_id_fkey foreign key (id) references auth.users(id) on delete cascade;
 
 -- Auto-create a public.users row whenever someone signs up via Supabase Auth
--- (email OTP or Google OAuth). Profile fields are filled in afterwards.
+-- (email OTP). Profile fields are filled in afterwards.
 create or replace function public.handle_new_auth_user()
 returns trigger
 language plpgsql security definer

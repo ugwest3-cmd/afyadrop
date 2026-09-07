@@ -6,7 +6,7 @@ import { createClient } from "@supabase/supabase-js";
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder.supabase.co";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "placeholder-anon-key";
 
-// Single browser client for Supabase Auth (email OTP + Google OAuth).
+// Single browser client for Supabase Auth (email OTP).
 // Session is persisted in localStorage by default, which is what we want
 // for a client-only Next.js app.
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {

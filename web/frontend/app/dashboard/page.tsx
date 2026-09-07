@@ -7,8 +7,8 @@ import { api } from "@/lib/api";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
 
-const CREDIT_PRICE = 100; // UGX per credit
-const MIN_UGX = 1000;
+const CREDIT_PRICE = 0.10; // USD per credit
+const MIN_USD = 1.00;
 const BUNDLES = [10, 25, 50, 100];
 
 export default function Dashboard() {
@@ -45,7 +45,7 @@ export default function Dashboard() {
   }, [router]);
 
   const amount = credits * CREDIT_PRICE;
-  const belowMin = amount < MIN_UGX;
+  const belowMin = amount < MIN_USD;
 
   async function onBuy(e: React.FormEvent) {
     e.preventDefault();
@@ -53,7 +53,7 @@ export default function Dashboard() {
     setLoading(true);
     try {
       const res = await api.purchase(userId, credits);
-      window.location.href = res.redirect_url; // PesaPal checkout
+      window.location.href = res.redirect_url; // IntaSend checkout
     } catch (err) {
       setError((err as Error).message);
       setLoading(false);
@@ -82,7 +82,7 @@ export default function Dashboard() {
         <Card className="mt-8">
           <h2 className="text-xl font-bold text-teal">Buy credits</h2>
           <p className="mt-1 text-sm text-muted">
-            1 credit = {CREDIT_PRICE} UGX · minimum {MIN_UGX.toLocaleString()} UGX · secure checkout via PesaPal
+            1 credit = ${CREDIT_PRICE.toFixed(2)} USD · minimum ${MIN_USD.toFixed(2)} USD · secure checkout via IntaSend
           </p>
 
           <form onSubmit={onBuy} className="mt-6">
@@ -103,19 +103,19 @@ export default function Dashboard() {
                   >
                     <div className="font-heading text-2xl font-bold text-teal">{b}</div>
                     <div className="text-xs font-medium uppercase tracking-wide text-muted">credits</div>
-                    <div className="mt-1 text-sm font-semibold text-teal">{(b * CREDIT_PRICE).toLocaleString()} UGX</div>
+                    <div className="mt-1 text-sm font-semibold text-teal">${(b * CREDIT_PRICE).toFixed(2)} USD</div>
                   </button>
                 );
               })}
             </div>
 
             {belowMin && (
-              <p className="error-text">Minimum purchase is {MIN_UGX.toLocaleString()} UGX (10 credits).</p>
+              <p className="error-text">Minimum purchase is ${MIN_USD.toFixed(2)} USD.</p>
             )}
             {error && <p className="error-text">{error}</p>}
 
             <Button type="submit" loading={loading} disabled={belowMin || !userId} className="mt-6 w-full text-lg">
-              Pay {amount.toLocaleString()} UGX with PesaPal
+              Pay ${amount.toFixed(2)} USD with IntaSend
             </Button>
             {!userId && <p className="hint mt-3 text-center">Please <a className="underline" href="/login">login</a> first.</p>}
           </form>

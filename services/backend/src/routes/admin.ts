@@ -67,12 +67,12 @@ adminRouter.get("/stats", async (_req, res) => {
   const [users, questions, revenue] = await Promise.all([
     supabase.from("users").select("id", { count: "exact", head: true }),
     supabase.from("qa_logs").select("id", { count: "exact", head: true }),
-    supabase.from("payments").select("amount_ugx").eq("status", "paid"),
+    supabase.from("payments").select("amount").eq("status", "paid"),
   ]);
-  const totalRevenue = (revenue.data ?? []).reduce((s, p) => s + (p.amount_ugx ?? 0), 0);
+  const totalRevenue = (revenue.data ?? []).reduce((s, p) => s + (p.amount ?? 0), 0);
   res.json({
     total_users: users.count ?? 0,
     total_questions: questions.count ?? 0,
-    total_revenue_ugx: totalRevenue,
+    total_revenue: totalRevenue,
   });
 });

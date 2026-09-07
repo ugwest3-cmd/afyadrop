@@ -32,7 +32,7 @@ interface Doc {
 interface Stats {
   total_users: number;
   total_questions: number;
-  total_revenue_ugx: number;
+  total_revenue: number;
 }
 
 export default function Admin() {
@@ -200,8 +200,8 @@ export default function Admin() {
               <div className="mt-1 text-xs font-semibold uppercase tracking-wide text-muted">Questions answered</div>
             </Card>
             <Card className="text-center">
-              <div className="font-heading text-4xl font-bold text-teal">{stats.total_revenue_ugx.toLocaleString()}</div>
-              <div className="mt-1 text-xs font-semibold uppercase tracking-wide text-muted">Revenue (UGX)</div>
+              <div className="font-heading text-4xl font-bold text-teal">${stats.total_revenue.toLocaleString()}</div>
+              <div className="mt-1 text-xs font-semibold uppercase tracking-wide text-muted">Revenue (USD)</div>
             </Card>
           </div>
         )}

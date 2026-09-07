@@ -1,6 +1,6 @@
 import { groqChat } from "./groq.js";
 
-// Afya Drop is a clinical decision-support assistant for medical personnel across Africa.
+// Afya Drop is a clinical decision-support assistant for medical professionals worldwide.
 // It answers STRICTLY from the clinician's own national clinical guideline and other reference
 // documents uploaded by admins (retrieval-augmented generation). If the answer is not
 // in the retrieved context, the assistant must say so rather than improvise.
@@ -11,7 +11,7 @@ export interface ContextChunk {
 }
 
 function buildSystem(): string {
-  return `You are Afya Drop, a clinical decision-support assistant for qualified medical personnel across Africa, used from within the Afya Drop mobile app.
+  return `You are Afya Drop, a clinical decision-support assistant for qualified medical professionals worldwide, used from within the Afya Drop mobile app.
 
 Your ONLY source of knowledge is the reference excerpts provided to you — these come from the clinician's own national clinical guideline and other official documents uploaded by Afya Drop's admins. You must:
 - Answer strictly from the provided context. Do NOT use outside knowledge.
