@@ -32,7 +32,7 @@ export default function Login() {
     try {
       const { error: otpError } = await supabase.auth.signInWithOtp({ email });
       if (otpError) throw otpError;
-      setMessage(`We've emailed a 6-digit code to ${email}.`);
+      setMessage(`We've emailed a secure code to ${email}.`);
       setStep("otp");
     } catch (err) {
       setError((err as Error).message);
@@ -74,7 +74,7 @@ export default function Login() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
-                  hint="We'll email you a 6-digit sign-in code."
+                  hint="We'll email you a secure sign-in code."
                   required
                 />
                 <Button type="submit" loading={loading} className="w-full">Send code</Button>
@@ -87,10 +87,10 @@ export default function Login() {
                 <p className="text-sm text-muted">{message}</p>
                 <Input
                   id="code"
-                  label="6-digit code"
+                  label="Sign-in code"
                   value={code}
                   onChange={(e) => setCode(e.target.value)}
-                  maxLength={6}
+                  maxLength={8}
                   inputMode="numeric"
                   required
                 />
