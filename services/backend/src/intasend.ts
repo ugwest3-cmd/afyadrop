@@ -36,11 +36,15 @@ export async function createCheckout(input: CreateCheckoutInput): Promise<{ url:
     const collection = intasend.collection();
     const resp = await collection.charge(payload);
     
-    if (!resp.url || !resp.invoice_id) {
-      throw new Error("Invalid response from IntaSend checkout");
+    // IntaSend sometimes returns the URL in different fields depending on the SDK version
+    const url = resp?.url || resp?.data?.url || resp?.checkout_url;
+    const invoiceId = resp?.invoice_id || resp?.id || resp?.data?.invoice_id || resp?.data?.id;
+
+    if (!url || !invoiceId) {
+      throw new Error(`Invalid response from IntaSend checkout. They sent: ${JSON.stringify(resp)}`);
     }
     
-    return { url: resp.url, invoiceId: resp.invoice_id };
+    return { url, invoiceId };
   } catch (err: any) {
     throw new Error(`IntaSend checkout error: ${err.message || err}`);
   }
