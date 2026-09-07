@@ -72,8 +72,14 @@ creditsRouter.post("/purchase", requireAuth, async (req, res) => {
 // POST /credits/webhook   (IntaSend Webhook)
 creditsRouter.post("/webhook", async (req, res) => {
   // IntaSend sends data in req.body
-  const { invoice_id, state, value, account } = req.body ?? {};
+  const { invoice_id, state, value, account, challenge } = req.body ?? {};
   
+  // IntaSend webhook verification challenge
+  if (challenge) {
+    res.send(challenge);
+    return;
+  }
+
   if (!invoice_id) {
     res.status(400).json({ error: "invoice_id is required" });
     return;
