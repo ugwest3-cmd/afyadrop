@@ -57,7 +57,7 @@ create table if not exists public.credit_transactions (
   user_id uuid not null references public.users(id) on delete cascade,
   type text not null check (type in ('purchase','spend','refund','bonus')),
   credits integer not null,
-  amount integer,
+  amount numeric,
   currency text default 'USD',
   reference text,
   created_at timestamptz not null default now()
@@ -69,7 +69,7 @@ create table if not exists public.payments (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.users(id) on delete cascade,
   credits integer not null,
-  amount integer not null,
+  amount numeric not null,
   currency text not null default 'USD',
   provider_tracking_id text,
   provider_ref text,
@@ -171,7 +171,7 @@ end;
 $$;
 
 -- Add credits after a successful payment.
-create or replace function public.add_credits(p_user uuid, p_credits integer, p_amount integer, p_currency text default 'USD', p_reference text default null)
+create or replace function public.add_credits(p_user uuid, p_credits integer, p_amount numeric, p_currency text default 'USD', p_reference text default null)
 returns integer
 language plpgsql security definer
 as $$
