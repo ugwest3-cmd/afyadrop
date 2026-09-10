@@ -82,9 +82,11 @@ h1, h2, h3, h4 {
 .app-shell {
   display: flex;
   flex-direction: column;
-  height: 100dvh; /* dynamic viewport height — correct on mobile */
+  position: fixed;
+  inset: 0;
   background-color: #F8FAFC;
   overflow: hidden;
+  z-index: 50;
 }
 
 .app-topbar {

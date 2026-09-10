@@ -72,7 +72,7 @@ export default function AskPage() {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error("Not authenticated");
-      const fileName = `lab-reports/${Date.now()}-${file.name}`;
+      const fileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
       const { error: uploadError } = await supabase.storage
         .from("lab-reports")
         .upload(fileName, file, { upsert: true });
