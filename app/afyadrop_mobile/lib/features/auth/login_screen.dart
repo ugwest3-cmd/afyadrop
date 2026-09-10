@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../core/api.dart';
 import '../../core/design_system.dart';
+import '../../core/widgets/afya_input.dart';
 import '../auth/complete_profile_screen.dart';
+import '../auth/register_screen.dart';
+import '../auth/enter_email_otp_screen.dart';
 import '../main/main_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -50,25 +53,10 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  Future<void> _otpLogin() async {
-    if (email.text.trim().isEmpty) {
-      setState(() => error = 'Enter your email first');
-      return;
-    }
-    setState(() => loading = true);
-    try {
-      await Supabase.instance.client.auth.signInWithOtp(email: email.text.trim());
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('OTP sent to your email')),
-        );
-      }
-    } catch (e) {
-      final message = await widget.api.errorMessage(e) ?? e.toString();
-      if (mounted) setState(() => error = message);
-    } finally {
-      if (mounted) setState(() => loading = false);
-    }
+  void _otpLogin() {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => EnterEmailOtpScreen(api: widget.api)),
+    );
   }
 
   @override
@@ -105,42 +93,96 @@ class _LoginScreenState extends State<LoginScreen> {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 48),
-                  TextField(
+                  AfyaInput(
                     controller: email,
-                    decoration: const InputDecoration(labelText: 'Email'),
+                    label: 'Email',
+                    hintText: 'Enter your email address',
                     keyboardType: TextInputType.emailAddress,
+                    prefixIcon: const Icon(Icons.email_outlined, size: 20),
                   ),
-                  const SizedBox(height: 12),
-                  TextField(
+                  const SizedBox(height: 16),
+                  AfyaInput(
                     controller: password,
-                    decoration: const InputDecoration(labelText: 'Password'),
+                    label: 'Password',
+                    hintText: 'Enter your password',
                     obscureText: true,
+                    prefixIcon: const Icon(Icons.lock_outline, size: 20),
                   ),
                   if (error != null) ...[
-                    const SizedBox(height: 12),
-                    Text(error!, style: TextStyle(color: AfyaColors.error)),
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: AfyaColors.error.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(AfyaRadius.md),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.error_outline_rounded, color: AfyaColors.error, size: 20),
+                          const SizedBox(width: 8),
+                          Expanded(child: Text(error!, style: TextStyle(color: AfyaColors.error, fontSize: 14))),
+                        ],
+                      ),
+                    ),
                   ],
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 52,
+                    child: ElevatedButton(
+                      onPressed: loading ? null : submit,
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AfyaRadius.full)),
+                        backgroundColor: AfyaColors.primary,
+                        foregroundColor: Colors.white,
+                      ),
+                      child: Text(
+                        loading ? 'Signing in...' : 'Sign in',
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  ),
                   const SizedBox(height: 16),
                   SizedBox(
                     width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: loading ? null : submit,
-                      child: Text(loading ? 'Signing in...' : 'Sign in'),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  SizedBox(
-                    width: double.infinity,
+                    height: 52,
                     child: OutlinedButton.icon(
                       onPressed: loading ? null : _otpLogin,
-                      icon: const Icon(Icons.mail_outline_rounded, size: 18),
-                      label: const Text('Sign in with Email OTP'),
+                      icon: const Icon(Icons.mail_outline_rounded, size: 20),
+                      style: OutlinedButton.styleFrom(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AfyaRadius.full)),
+                        side: BorderSide(color: AfyaColors.primary),
+                        foregroundColor: AfyaColors.primary,
+                      ),
+                      label: const Text(
+                        'Sign in with Email OTP',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 32),
                   TextButton(
-                    onPressed: widget.onRegisterTap,
-                    child: const Text('Don\'t have an account? Create one'),
+                    onPressed: widget.onRegisterTap ??
+                        () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => RegisterScreen(
+                                  api: widget.api,
+                                  onLoginTap: () => Navigator.of(context).pop(),
+                                ),
+                              ),
+                            ),
+                    child: RichText(
+                      text: TextSpan(
+                        text: 'Don\'t have an account? ',
+                        style: AfyaTextStyles.bodyMedium.copyWith(color: Colors.grey[700]),
+                        children: [
+                          TextSpan(
+                            text: 'Create one',
+                            style: TextStyle(color: AfyaColors.primary, fontWeight: FontWeight.w600),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),

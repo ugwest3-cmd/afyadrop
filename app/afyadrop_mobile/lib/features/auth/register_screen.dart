@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../core/api.dart';
 import '../../core/design_system.dart';
+import '../../core/widgets/afya_input.dart';
 import 'verify_email_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -17,46 +18,45 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final fullName = TextEditingController();
   final email = TextEditingController();
   final password = TextEditingController();
-  final licenceNumber = TextEditingController();
-  final facility = TextEditingController();
-  final ward = TextEditingController();
-  final pesapalContact = TextEditingController();
-
-  String? selectedCouncil;
-  String selectedCadre = 'Medical Officer';
+  String? selectedCountry;
   bool loading = false;
   String? error;
-  bool licenceVerified = false;
+  List<Map<String, dynamic>> countries = [];
 
-  static const _councils = [
-    {'code': 'UMDPC', 'name': 'Uganda Medical & Dental Practitioners Council (UMDPC)'},
-    {'code': 'KMPDC', 'name': 'Kenya Medical Practitioners and Dentists Council (KMPDC)'},
-    {'code': 'MCT', 'name': 'Medical Council of Tanganyika (MCT)'},
-    {'code': 'RMDC', 'name': 'Rwanda Medical and Dental Practitioners Council (RMDC)'},
-    {'code': 'HPCZ', 'name': 'Health Professions Council of Zambia (HPCZ)'},
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _loadCountries();
+  }
 
-  static const _cadres = [
-    'Medical Officer',
-    'Clinical Officer',
-    'Paediatrician',
-    'Nurse Practitioner',
-    'Pharmacist',
-  ];
+  Future<void> _loadCountries() async {
+    try {
+      final result = await widget.api.countries();
+      final list = List<Map<String, dynamic>>.from(result['countries'] ?? []);
+      if (mounted) setState(() => countries = list);
+    } catch (e) {
+      // ignore
+    }
+  }
 
   Future<void> submit() async {
-    if (selectedCouncil == null) {
-      setState(() => error = 'Please select your licensing council');
+    if (selectedCountry == null) {
+      setState(() => error = 'Please select a country to get started');
       return;
     }
     if (fullName.text.trim().isEmpty) {
-      setState(() => error = 'Please enter your full legal name');
+      setState(() => error = 'Please enter your full name');
       return;
     }
-    if (licenceNumber.text.trim().isEmpty) {
-      setState(() => error = 'Please enter your licence number');
+    if (email.text.trim().isEmpty) {
+      setState(() => error = 'Please enter your email');
       return;
     }
+    if (password.text.trim().length < 6) {
+      setState(() => error = 'Password must be at least 6 characters');
+      return;
+    }
+
     setState(() {
       loading = true;
       error = null;
@@ -67,12 +67,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         password: password.text.trim(),
         data: {
           'full_name': fullName.text.trim(),
-          'council': selectedCouncil,
-          'cadre': selectedCadre,
-          'licence_number': licenceNumber.text.trim(),
-          'facility': facility.text.trim(),
-          'ward': ward.text.trim(),
-          'pesapal_contact': pesapalContact.text.trim(),
+          'country': selectedCountry,
         },
       );
       if (!mounted) return;
@@ -96,30 +91,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 600),
+              constraints: const BoxConstraints(maxWidth: 440),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          children: [
-                            Container(
-                              height: 4,
-                              decoration: BoxDecoration(
-                                color: AfyaColors.primary,
-                                borderRadius: BorderRadius.circular(2),
-                              ),
-                            ),
-                            const SizedBox(height: 6),
-                            Text('Step 2 of 2', style: AfyaTextStyles.labelSmall.copyWith(color: AfyaColors.primary)),
-                          ],
-                        ),
-                      ),
-                    ],
+                  Center(
+                    child: Image.asset(
+                      'assets/images/afyadrop_logo.png',
+                      height: 80,
+                      fit: BoxFit.contain,
+                    ),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 32),
+                  Text(
+                    'Create an Account',
+                    style: AfyaTextStyles.headlineMedium.copyWith(fontWeight: FontWeight.w800),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'Get instant clinical answers grounded in guidelines.',
+                    style: AfyaTextStyles.bodyLarge.copyWith(color: Colors.grey[600]),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 32),
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
@@ -133,7 +128,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
-                            'You have 5 Free Credits to explore AfyaDrop',
+                            'You get 5 Free Credits when you register',
                             style: TextStyle(
                               fontFamily: AfyaTextStyles.bodyFont,
                               fontSize: 14,
@@ -146,115 +141,91 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  Text('Clinician Registration', style: AfyaTextStyles.headlineSmall),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Complete your professional registration for verification.',
-                    style: AfyaTextStyles.bodyMedium.copyWith(
-                      color: AfyaColors.onSurface.withOpacity(0.7),
+                  DropdownButtonFormField<String>(
+                    decoration: InputDecoration(
+                      labelText: 'Select Country',
+                      prefixIcon: const Icon(Icons.public, size: 20),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(AfyaRadius.full)),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                    ),
+                    items: countries
+                        .map((c) => DropdownMenuItem(value: c['code']?.toString(), child: Text(c['name']?.toString() ?? c['code']?.toString() ?? '')))
+                        .toList(),
+                    onChanged: (value) => setState(() => selectedCountry = value),
+                    icon: const Icon(Icons.arrow_drop_down),
+                  ),
+                  const SizedBox(height: 16),
+                  AfyaInput(
+                    controller: fullName,
+                    label: 'Full Name',
+                    hintText: 'Enter your full name',
+                    prefixIcon: const Icon(Icons.person_outline, size: 20),
+                  ),
+                  const SizedBox(height: 16),
+                  AfyaInput(
+                    controller: email,
+                    label: 'Email',
+                    hintText: 'Enter your email address',
+                    keyboardType: TextInputType.emailAddress,
+                    prefixIcon: const Icon(Icons.email_outlined, size: 20),
+                  ),
+                  const SizedBox(height: 16),
+                  AfyaInput(
+                    controller: password,
+                    label: 'Password',
+                    hintText: 'Create a password (min 6 chars)',
+                    obscureText: true,
+                    prefixIcon: const Icon(Icons.lock_outline, size: 20),
+                  ),
+                  if (error != null) ...[
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: AfyaColors.error.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(AfyaRadius.md),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.error_outline_rounded, color: AfyaColors.error, size: 20),
+                          const SizedBox(width: 8),
+                          Expanded(child: Text(error!, style: TextStyle(color: AfyaColors.error, fontSize: 14))),
+                        ],
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 52,
+                    child: ElevatedButton(
+                      onPressed: loading ? null : submit,
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AfyaRadius.full)),
+                        backgroundColor: AfyaColors.primary,
+                        foregroundColor: Colors.white,
+                      ),
+                      child: Text(
+                        loading ? 'Creating account...' : 'Create Account',
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 24),
-                  TextField(
-                    controller: fullName,
-                    decoration: const InputDecoration(
-                      labelText: 'Full Legal Name',
-                      hintText: 'As it appears on your practising licence',
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text('Licensing Council', style: AfyaTextStyles.labelMedium),
-                  const SizedBox(height: 6),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: _councils.map((council) {
-                      final isSelected = selectedCouncil == council['code'];
-                      return FilterChip(
-                        label: Text(council['code'] as String, style: const TextStyle(fontSize: 12)),
-                        selected: isSelected,
-                        onSelected: (value) => setState(() => selectedCouncil = value ? council['code'] as String : null),
-                        selectedColor: AfyaColors.countryColor(council['code'] as String),
-                        checkmarkColor: Colors.white,
-                        labelStyle: TextStyle(color: isSelected ? Colors.white : AfyaColors.onSurface),
-                      );
-                    }).toList(),
-                  ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: licenceNumber,
-                    decoration: InputDecoration(
-                      labelText: 'Council Licence / Reg Number',
-                      suffixIcon: licenceVerified
-                          ? const Icon(Icons.verified_rounded, color: AfyaColors.secondary, size: 18)
-                          : null,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  DropdownButtonFormField<String>(
-                    decoration: const InputDecoration(labelText: 'Cadre / Qualification'),
-                    initialValue: selectedCadre,
-                    items: _cadres
-                        .map((c) => DropdownMenuItem(value: c, child: Text(c)))
-                        .toList(),
-                    onChanged: (value) => setState(() => selectedCadre = value ?? selectedCadre),
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: facility,
-                          decoration: const InputDecoration(labelText: 'Health Facility'),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: TextField(
-                          controller: ward,
-                          decoration: const InputDecoration(labelText: 'Ward / Department'),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: pesapalContact,
-                    decoration: const InputDecoration(
-                      labelText: 'Contact for PesaPal Receipts',
-                      hintText: 'Mobile money number',
-                    ),
-                    keyboardType: TextInputType.phone,
-                  ),
-                  const SizedBox(height: 16),
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: AfyaColors.surfaceVariant,
-                      borderRadius: BorderRadius.circular(AfyaRadius.sm),
-                    ),
-                    child: Text(
-                      'By registering, you confirm that the information provided is accurate and you hold a current licence from the selected council.',
-                      style: AfyaTextStyles.bodySmall.copyWith(
-                        color: AfyaColors.onSurface.withOpacity(0.7),
-                      ),
-                    ),
-                  ),
-                  if (error != null) ...[
-                    const SizedBox(height: 12),
-                    Text(error!, style: const TextStyle(color: AfyaColors.error)),
-                  ],
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: loading ? null : submit,
-                      child: Text(loading ? 'Registering...' : 'Complete Registration'),
-                    ),
-                  ),
                   TextButton(
                     onPressed: widget.onLoginTap,
-                    child: const Text('Already have an account? Sign in'),
+                    child: RichText(
+                      text: TextSpan(
+                        text: 'Already have an account? ',
+                        style: AfyaTextStyles.bodyMedium.copyWith(color: Colors.grey[700]),
+                        children: [
+                          TextSpan(
+                            text: 'Sign in',
+                            style: TextStyle(color: AfyaColors.primary, fontWeight: FontWeight.w600),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),

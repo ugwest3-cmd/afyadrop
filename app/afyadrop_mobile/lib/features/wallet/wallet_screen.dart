@@ -228,85 +228,30 @@ class _WalletScreenState extends State<WalletScreen> {
                     );
                   }),
                   const SizedBox(height: 24),
-                  Text('Mobile Money Checkout', style: AfyaTextStyles.titleMedium),
+                  const SizedBox(height: 24),
+                  Text('How to top up', style: AfyaTextStyles.titleMedium),
                   const SizedBox(height: 12),
-                  Row(
-                    children: _providers.map((provider) {
-                      return Expanded(
-                        child: GestureDetector(
-                          onTap: () {},
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            margin: const EdgeInsets.only(right: 8),
-                            decoration: BoxDecoration(
-                              color: AfyaColors.surface,
-                              borderRadius: BorderRadius.circular(AfyaRadius.md),
-                              border: Border.all(color: AfyaColors.outlineVariant),
-                            ),
-                            child: Column(
-                              children: [
-                                Icon(provider['icon'] as IconData, size: 24, color: AfyaColors.primary),
-                                const SizedBox(height: 4),
-                                Text(provider['name'] as String, style: const TextStyle(fontSize: 10)),
-                              ],
-                            ),
+                  AfyaCard(
+                    color: AfyaColors.surfaceVariant,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Row(
+                            children: [
+                              const Icon(Icons.public, color: AfyaColors.primary),
+                              const SizedBox(width: 8),
+                              Text('Visit Web Portal', style: AfyaTextStyles.titleSmall),
+                            ],
                           ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: AfyaColors.surfaceVariant,
-                          borderRadius: BorderRadius.circular(AfyaRadius.md),
-                          border: Border.all(color: AfyaColors.outline),
-                        ),
-                        child: Text('+256', style: AfyaTextStyles.labelMedium),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: AfyaInput(
-                          controller: phoneController,
-                          hintText: 'Phone number',
-                          keyboardType: TextInputType.phone,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: selectedPackage != null
-                          ? () => purchase(_packages.firstWhere((p) => p['label'] == selectedPackage)['credits'] as int)
-                          : null,
-                      child: const Text('Checkout'),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: AfyaColors.surfaceVariant,
-                      borderRadius: BorderRadius.circular(AfyaRadius.sm),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(Icons.shield_rounded, size: 14, color: AfyaColors.onSurface.withOpacity(0.6)),
-                        const SizedBox(width: 6),
-                        Expanded(
-                          child: Text(
-                            'Secured by PesaPal escrow',
-                            style: AfyaTextStyles.bodySmall.copyWith(
-                              color: AfyaColors.onSurface.withOpacity(0.7),
-                            ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'To comply with billing policies, please purchase credits via our secure web dashboard at portal.afyadrop.com using your browser.',
+                            style: AfyaTextStyles.bodyMedium,
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                   const SizedBox(height: 24),

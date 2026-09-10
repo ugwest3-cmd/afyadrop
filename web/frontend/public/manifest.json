@@ -1,0 +1,26 @@
+{
+  "name": "AfyaDrop",
+  "short_name": "AfyaDrop",
+  "description": "Clinical decision support grounded in evidence-based clinical guidelines.",
+  "start_url": "/app",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#00282C",
+  "background_color": "#00282C",
+  "icons": [
+    {
+      "src": "/logo-mark.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo-mark.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["medical", "health"],
+  "lang": "en"
+}

@@ -79,6 +79,9 @@ class AfyaDropApi {
   }
 
   Future<String?> errorMessage(Object error) async {
+    if (error is AuthException) {
+      return error.message;
+    }
     if (error is DioException && error.response?.data is Map) {
       return error.response?.data['error']?.toString();
     }

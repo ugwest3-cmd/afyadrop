@@ -20,6 +20,10 @@ class AfyaColors {
   static const surfaceVariant = Color(0xFFf0f2f5);
   static const shadow = Color(0x1a000000);
 
+  static const chatBubbleUser = Color(0xFF14595E);
+  static const chatBubbleUserText = Colors.white;
+  static const chatBubbleAi = Color(0xFFFFFFFF);
+  static const chatBubbleAiBorder = Color(0xFFE5E7EB);
   static const uganda = Color(0xFF991B1B);
   static const kenya = Color(0xFF854D0E);
   static const tanzania = Color(0xFF075985);

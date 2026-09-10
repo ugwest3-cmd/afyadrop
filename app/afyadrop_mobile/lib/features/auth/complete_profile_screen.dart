@@ -25,6 +25,27 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
   void initState() {
     super.initState();
     _loadCountries();
+    _loadUserMetadata();
+  }
+
+  Future<void> _loadUserMetadata() async {
+    try {
+      final profileResult = await widget.api.me();
+      final user = Map<String, dynamic>.from(profileResult['user'] ?? {});
+      final meta = Map<String, dynamic>.from(user['user_metadata'] ?? {});
+      if (mounted) {
+        setState(() {
+          if (meta['full_name'] != null) {
+            fullName.text = meta['full_name'];
+          }
+          if (meta['country'] != null) {
+            selectedCountry = meta['country'];
+          }
+        });
+      }
+    } catch (e) {
+      // ignore
+    }
   }
 
   Future<void> _loadCountries() async {

@@ -62,6 +62,14 @@ export interface UserProfile {
   suspended: boolean;
 }
 
+export interface QALog {
+  id: string;
+  question: string;
+  answer: string | null;
+  grounded: boolean;
+  created_at: string;
+}
+
 export const api = {
   me: () => get<{ user: UserProfile | null }>("/auth/me"),
   completeProfile: (input: ProfileInput) => patch<{ ok: boolean; user: UserProfile }>("/auth/profile", input),
@@ -75,4 +83,5 @@ export const api = {
       question,
       image_url: imageUrl,
     }),
+  history: () => get<{ items: QALog[] }>("/qa/history"),
 };

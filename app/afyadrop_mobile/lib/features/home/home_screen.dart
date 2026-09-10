@@ -26,14 +26,14 @@ class _HomeScreenState extends State<HomeScreen> {
   final question = TextEditingController();
   Map<String, dynamic>? profile;
   List<Map<String, dynamic>> history = [];
-  String? answer;
+  String? _pendingQuestion;
   String? error;
   bool loading = true;
   bool asking = false;
   String? selectedImageUrl;
   bool _isTyping = false;
 
-  static const _quickChips = ['Malaria', 'UTI', 'Pneumonia', 'Anaemia', 'Hypertension', 'Sepsis'];
+  static const _quickChips = ['Pneumonia', 'Anaemia', 'Hypertension', 'Sepsis', 'Pediatrics', 'Antibiotic Guidelines'];
 
   @override
   void initState() {
@@ -63,21 +63,22 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> ask() async {
-    if (question.text.trim().isEmpty) return;
+    final text = question.text.trim();
+    if (text.isEmpty) return;
     setState(() {
       asking = true;
       error = null;
-      answer = null;
+      _pendingQuestion = text;
       _isTyping = true;
+      question.clear();
     });
     try {
-      final result = await widget.api.ask(question.text.trim(), imageUrl: selectedImageUrl);
+      await widget.api.ask(text, imageUrl: selectedImageUrl);
       if (mounted) {
         setState(() {
-          answer = result['answer']?.toString();
-          question.clear();
           selectedImageUrl = null;
           _isTyping = false;
+          _pendingQuestion = null;
         });
         await refresh();
       }
@@ -121,127 +122,42 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: AfyaColors.background,
       body: Column(
         children: [
-          if (widget.showAppBar) ...[
-            Container(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-              decoration: const BoxDecoration(
-                color: AfyaColors.surface,
-                border: Border(bottom: BorderSide(color: AfyaColors.outlineVariant)),
-              ),
-              child: SafeArea(
-                bottom: false,
-                child: Row(
-                  children: [
-                    Container(
-                      width: 36,
-                      height: 36,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      clipBehavior: Clip.antiAlias,
-                      child: Image.asset('assets/images/afyadrop_logo.png', fit: BoxFit.cover),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('AfyaDrop', style: AfyaTextStyles.labelLarge.copyWith(fontWeight: FontWeight.w700)),
-                          Text('Consult', style: AfyaTextStyles.bodySmall.copyWith(
-                            color: AfyaColors.onSurface.withOpacity(0.6),
-                          )),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: AfyaColors.countryColor(countryCode).withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(AfyaRadius.full),
-                      ),
-                      child: Text(
-                        countryCode,
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          color: AfyaColors.countryColor(countryCode),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: AfyaColors.surfaceVariant.withOpacity(0.5),
+              border: const Border(bottom: BorderSide(color: AfyaColors.outlineVariant)),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.verified_user_outlined, size: 16, color: AfyaColors.secondary),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: RichText(
+                    text: TextSpan(
+                      text: 'Grounding: ',
+                      style: AfyaTextStyles.labelMedium.copyWith(color: AfyaColors.secondary, fontWeight: FontWeight.w700),
+                      children: [
+                        TextSpan(
+                          text: 'Uganda Clinical Guidelines (UCG 2023)',
+                          style: AfyaTextStyles.bodySmall.copyWith(color: AfyaColors.onSurface.withOpacity(0.8)),
                         ),
-                      ),
+                      ],
                     ),
-                    const SizedBox(width: 12),
-                    GestureDetector(
-                      onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => WalletScreen(api: widget.api))),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: AfyaColors.surfaceVariant,
-                          borderRadius: BorderRadius.circular(AfyaRadius.full),
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.account_balance_wallet_outlined, size: 14, color: AfyaColors.primary),
-                            const SizedBox(width: 4),
-                            Text('$balance', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AfyaColors.primary)),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    GestureDetector(
-                      onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => ProfileScreen(api: widget.api))),
-                      child: CircleAvatar(
-                        radius: 16,
-                        backgroundColor: AfyaColors.primary.withOpacity(0.1),
-                        child: Text(
-                          (profile?['full_name']?.toString() ?? 'U').substring(0, 1).toUpperCase(),
-                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AfyaColors.primary),
-                        ),
-                      ),
-                    ),
-                  ],
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-              ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFDCFCE7),
+                    borderRadius: BorderRadius.circular(AfyaRadius.xs),
+                  ),
+                  child: Text('Live Sync', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: AfyaColors.secondary)),
+                ),
+              ],
             ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: const BoxDecoration(
-                color: AfyaColors.surface,
-                border: Border(bottom: BorderSide(color: AfyaColors.outlineVariant)),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 8,
-                    height: 8,
-                    decoration: const BoxDecoration(
-                      color: AfyaColors.secondary,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      'Active: Uganda Clinical Guidelines (UCG 2023)',
-                      style: AfyaTextStyles.bodySmall.copyWith(
-                        fontWeight: FontWeight.w500,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.swap_horiz_rounded, size: 18),
-                    onPressed: () {},
-                    visualDensity: VisualDensity.compact,
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.refresh_rounded, size: 18),
-                    onPressed: refresh,
-                    visualDensity: VisualDensity.compact,
-                  ),
-                ],
-              ),
-            ),
-          ],
+          ),
           Expanded(
             child: loading
                 ? const Center(child: CircularProgressIndicator())
@@ -284,11 +200,12 @@ class _HomeScreenState extends State<HomeScreen> {
                               ],
                             ),
                           ),
-                        if (answer != null || _isTyping) ...[
-                          if (answer != null)
-                            _buildAiResponseCard(answer!),
-                          if (_isTyping && answer == null)
+                        if (_pendingQuestion != null || _isTyping) ...[
+                          if (_pendingQuestion != null)
+                            _buildUserMessageCard(_pendingQuestion!, 'Just now'),
+                          if (_isTyping)
                             AfyaCard(
+                              margin: const EdgeInsets.only(bottom: 12),
                               child: Row(
                                 children: [
                                   SizedBox(
@@ -301,250 +218,296 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ],
                               ),
                             ),
-                          const SizedBox(height: 12),
                         ],
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text('Recent questions', style: AfyaTextStyles.titleMedium),
-                            TextButton.icon(
-                              onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => HistoryScreen(api: widget.api, showAppBar: true))),
-                              icon: const Icon(Icons.history_rounded, size: 16),
-                              label: const Text('View all'),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        if (history.isEmpty)
-                          Text('Your answered questions will appear here.', style: AfyaTextStyles.bodyMedium.copyWith(
-                            color: AfyaColors.onSurface.withOpacity(0.6),
-                          )),
-                        ...history.take(5).map((item) => GestureDetector(
-                          onTap: () => setState(() => answer = item['answer']?.toString()),
-                          child: AfyaCard(
-                            margin: const EdgeInsets.only(bottom: 8),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                Row(
-                                  children: [
-                                    Icon(Icons.chat_bubble_outline_rounded, size: 16, color: AfyaColors.primary),
-                                    const SizedBox(width: 8),
-                                    Expanded(
-                                      child: Text(
-                                        item['question']?.toString() ?? '',
-                                        style: AfyaTextStyles.labelLarge,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
+                        if (history.isEmpty && _pendingQuestion == null && !_isTyping)
+                          Center(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 80),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(16),
+                                    decoration: BoxDecoration(
+                                      color: AfyaColors.primary.withValues(alpha: 0.1),
+                                      shape: BoxShape.circle,
                                     ),
-                                  ],
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  item['created_at']?.toString() ?? '',
-                                  style: AfyaTextStyles.bodySmall.copyWith(
-                                    color: AfyaColors.onSurface.withOpacity(0.6),
+                                    child: const Icon(Icons.medical_services_outlined, size: 48, color: AfyaColors.primary),
                                   ),
-                                ),
-                              ],
+                                  const SizedBox(height: 24),
+                                  const Text('How can I help you today?', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: Colors.black87)),
+                                  const SizedBox(height: 8),
+                                  Text('Ask a clinical question to start.', style: TextStyle(fontSize: 15, color: Colors.grey[500], fontWeight: FontWeight.w500)),
+                                ],
+                              ),
                             ),
                           ),
+                        ...history.reversed.map((item) => Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            _buildUserMessageCard(item['question']?.toString() ?? '', item['created_at']?.toString() ?? ''),
+                            if (item['answer'] != null && item['answer'].toString().isNotEmpty)
+                               _buildAiResponseCard(item['answer'].toString()),
+                          ],
                         )),
                         const SizedBox(height: 80),
                       ],
                     ),
                   ),
           ),
-          if (widget.showAppBar) ...[
-            Container(
-              decoration: const BoxDecoration(
-                color: AfyaColors.surface,
-                border: Border(top: BorderSide(color: AfyaColors.outlineVariant)),
-              ),
-              padding: EdgeInsets.only(
-                left: 16,
-                right: 16,
-                top: 8,
-                bottom: MediaQuery.of(context).padding.bottom + 8,
-              ),
-              child: Column(
-                children: [
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: _quickChips.map((chip) {
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 8),
-                          child: FilterChip(
-                            label: Text(chip, style: const TextStyle(fontSize: 12)),
-                            onSelected: (value) { if (value) question.text = chip; },
-                            backgroundColor: AfyaColors.surfaceVariant,
-                          ),
-                        );
-                      }).toList(),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 15,
+                  offset: const Offset(0, -5),
+                ),
+              ],
+            ),
+            padding: EdgeInsets.only(
+              left: 16,
+              right: 16,
+              top: 12,
+              bottom: MediaQuery.of(context).padding.bottom + 12,
+            ),
+            child: Column(
+              children: [
+                if (_quickChips.isNotEmpty && history.isEmpty && _pendingQuestion == null)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: _quickChips.map((chip) {
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 8),
+                            child: ActionChip(
+                              label: Text(chip, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+                              onPressed: () {
+                                question.text = chip;
+                              },
+                              backgroundColor: AfyaColors.surfaceVariant.withValues(alpha: 0.5),
+                              side: BorderSide.none,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                            ),
+                          );
+                        }).toList(),
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: question,
-                          minLines: 1,
-                          maxLines: 3,
-                          decoration: InputDecoration(
-                            hintText: 'Ask a clinical question...',
-                            suffixIcon: selectedImageUrl != null
-                                ? IconButton(
-                                    icon: const Icon(Icons.image_rounded, size: 18, color: AfyaColors.primary),
-                                    onPressed: () => setState(() => selectedImageUrl = null),
-                                  )
-                                : null,
-                          ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    IconButton(
+                      onPressed: pickImage,
+                      icon: Icon(
+                        selectedImageUrl != null ? Icons.image_rounded : Icons.attach_file_rounded,
+                        color: selectedImageUrl != null ? AfyaColors.primary : Colors.grey[600],
+                        size: 24,
+                      ),
+                      tooltip: 'Attach lab report or image',
+                    ),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(28),
+                          border: Border.all(color: Colors.grey.withValues(alpha: 0.3)),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                controller: question,
+                                minLines: 1,
+                                maxLines: 4,
+                                textInputAction: TextInputAction.send,
+                                onSubmitted: (_) => asking ? null : ask(),
+                                decoration: InputDecoration(
+                                  filled: false,
+                                  fillColor: Colors.transparent,
+                                  hoverColor: Colors.transparent,
+                                  hintText: 'Ask a clinical question...',
+                                  hintStyle: TextStyle(color: Colors.grey[500], fontSize: 15),
+                                  border: InputBorder.none,
+                                  focusedBorder: InputBorder.none,
+                                  enabledBorder: InputBorder.none,
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 4, right: 4),
+                              child: IconButton(
+                                onPressed: asking ? null : ask,
+                                style: IconButton.styleFrom(
+                                  backgroundColor: AfyaColors.primary,
+                                  foregroundColor: Colors.white,
+                                  shape: const CircleBorder(),
+                                  padding: const EdgeInsets.all(8),
+                                ),
+                                icon: asking
+                                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                                    : const Icon(Icons.arrow_upward_rounded, size: 20),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      const SizedBox(width: 8),
-                      IconButton.filled(
-                        onPressed: asking ? null : ask,
-                        icon: asking
-                            ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                            : const Icon(Icons.send_rounded, size: 18),
-                      ),
-                    ],
+                    ),
+                  ],
+                ),
+                if (selectedImageUrl != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.check_circle_rounded, size: 14, color: Colors.green),
+                        const SizedBox(width: 6),
+                        Text('Image attached', style: TextStyle(fontSize: 12, color: Colors.grey[600], fontWeight: FontWeight.w500)),
+                        const Spacer(),
+                        InkWell(
+                          onTap: () => setState(() => selectedImageUrl = null),
+                          child: const Text('Remove', style: TextStyle(fontSize: 12, color: Colors.red, fontWeight: FontWeight.w600)),
+                        ),
+                      ],
+                    ),
                   ),
-                  Row(
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('1 credit / query', style: AfyaTextStyles.bodySmall.copyWith(
-                        color: AfyaColors.onSurface.withOpacity(0.6),
-                      )),
-                      const Spacer(),
-                      Text('Balance: $balance', style: AfyaTextStyles.bodySmall.copyWith(
-                        color: AfyaColors.primary,
-                        fontWeight: FontWeight.w600,
-                      )),
+                      Icon(Icons.generating_tokens_outlined, size: 12, color: Colors.grey[500]),
+                      const SizedBox(width: 4),
+                      Text('1 credit / query', style: TextStyle(fontSize: 11, color: Colors.grey[500], fontWeight: FontWeight.w500)),
                     ],
                   ),
-                ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildUserMessageCard(String text, String time) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0, left: 32.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: const BoxDecoration(
+              color: Color(0xFFF3F4F6),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20),
+                bottomLeft: Radius.circular(20),
+                bottomRight: Radius.circular(20),
+                topRight: Radius.circular(4),
               ),
             ),
-          ],
+            child: Text(text, style: const TextStyle(fontSize: 15, color: Colors.black87, height: 1.4, fontWeight: FontWeight.w500)),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 4.0, right: 4.0),
+            child: Text(time, style: TextStyle(fontSize: 11, color: Colors.grey[500])),
+          ),
         ],
       ),
     );
   }
 
   Widget _buildAiResponseCard(String answerText) {
-    return AfyaCard(
-      margin: const EdgeInsets.only(bottom: 12),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 24.0, right: 16.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                  color: AfyaColors.secondary.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(AfyaRadius.md),
+                width: 28,
+                height: 28,
+                decoration: const BoxDecoration(
+                  color: AfyaColors.primary,
+                  shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.auto_awesome_rounded, size: 18, color: AfyaColors.secondary),
+                child: const Icon(Icons.auto_awesome_rounded, size: 14, color: Colors.white),
               ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text('AfyaDrop AI', style: AfyaTextStyles.labelLarge.copyWith(fontWeight: FontWeight.w600)),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: AfyaColors.surfaceVariant,
-                  borderRadius: BorderRadius.circular(AfyaRadius.full),
-                ),
-                child: Text('0.8s', style: AfyaTextStyles.labelSmall),
-              ),
-              const SizedBox(width: 6),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: AfyaColors.surfaceVariant,
-                  borderRadius: BorderRadius.circular(AfyaRadius.full),
-                ),
-                child: Text('1 credit', style: AfyaTextStyles.labelSmall),
-              ),
+              const SizedBox(width: 8),
+              const Text('AfyaDrop AI', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Colors.black87)),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             decoration: BoxDecoration(
-              color: const Color(0xFFDCFCE7),
-              borderRadius: BorderRadius.circular(AfyaRadius.sm),
-            ),
-            child: Text('Uncomplicated malaria (P. falciparum)', style: AfyaTextStyles.bodySmall.copyWith(
-              color: const Color(0xFF166534),
-              fontWeight: FontWeight.w600,
-            )),
-          ),
-          const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: AfyaColors.primary.withOpacity(0.04),
-              borderRadius: BorderRadius.circular(AfyaRadius.md),
-              border: Border.all(color: AfyaColors.primary.withOpacity(0.12)),
+              color: Colors.white,
+              borderRadius: const BorderRadius.only(
+                topRight: Radius.circular(20),
+                bottomLeft: Radius.circular(20),
+                bottomRight: Radius.circular(20),
+                topLeft: Radius.circular(4),
+              ),
+              border: Border.all(color: Colors.grey.withValues(alpha: 0.15)),
+              boxShadow: [
+                BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 10, offset: const Offset(0, 4)),
+              ],
             ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('First-line: Artemether-Lumefantrine (AL)', style: AfyaTextStyles.labelLarge.copyWith(fontWeight: FontWeight.w600)),
-                const SizedBox(height: 4),
-                Text('Dose: 20/120 mg x 6 doses over 3 days', style: AfyaTextStyles.bodyMedium),
-              ],
-            ),
-          ),
-          const SizedBox(height: 10),
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: const Color(0xFFFEF2F2),
-              borderRadius: BorderRadius.circular(AfyaRadius.sm),
-            ),
-            child: Row(
-              children: [
-                const Icon(Icons.warning_amber_rounded, size: 16, color: AfyaColors.error),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text('Danger signs: monitor for cerebral malaria, severe anaemia', style: AfyaTextStyles.bodySmall.copyWith(color: AfyaColors.error)),
+                MarkdownBody(
+                  data: answerText,
+                  styleSheet: MarkdownStyleSheet(
+                    p: const TextStyle(fontSize: 15, color: Colors.black87, height: 1.6),
+                    h1: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700, height: 1.4),
+                    h2: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, height: 1.4),
+                    h3: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, height: 1.4),
+                    listBullet: const TextStyle(color: AfyaColors.primary),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.thumb_up_alt_outlined, size: 16, color: Colors.grey),
+                      onPressed: () {},
+                      visualDensity: VisualDensity.compact,
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    ),
+                    const SizedBox(width: 12),
+                    IconButton(
+                      icon: const Icon(Icons.thumb_down_alt_outlined, size: 16, color: Colors.grey),
+                      onPressed: () {},
+                      visualDensity: VisualDensity.compact,
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    ),
+                    const SizedBox(width: 12),
+                    IconButton(
+                      icon: const Icon(Icons.copy_rounded, size: 16, color: Colors.grey),
+                      onPressed: () {
+                        Clipboard.setData(ClipboardData(text: answerText));
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Copied to clipboard')));
+                      },
+                      visualDensity: VisualDensity.compact,
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    ),
+                  ],
                 ),
               ],
             ),
-          ),
-          const SizedBox(height: 10),
-          Text('Source: UCG 2023 Chapter 8', style: AfyaTextStyles.bodySmall.copyWith(
-            color: AfyaColors.onSurface.withOpacity(0.6),
-          )),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.thumb_up_alt_outlined, size: 18),
-                onPressed: () {},
-                visualDensity: VisualDensity.compact,
-              ),
-              IconButton(
-                icon: const Icon(Icons.thumb_down_alt_outlined, size: 18),
-                onPressed: () {},
-                visualDensity: VisualDensity.compact,
-              ),
-              IconButton(
-                icon: const Icon(Icons.copy_rounded, size: 18),
-                onPressed: () {
-                  Clipboard.setData(ClipboardData(text: answerText));
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Copied to clipboard')));
-                },
-                visualDensity: VisualDensity.compact,
-              ),
-            ],
           ),
         ],
       ),
