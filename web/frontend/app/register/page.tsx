@@ -50,7 +50,7 @@ export default function Register() {
       try {
         const { user } = await api.me();
         if (user?.profile_completed) {
-          router.push("/dashboard");
+          router.push("/app");
         } else {
           setStep("profile");
         }
@@ -226,9 +226,9 @@ export default function Register() {
               <h2 className="mt-4 text-xl font-bold text-teal">You're all set</h2>
               <p className="mt-2 text-sm text-muted">
                 Your account is confirmed and we've added <strong>5 free credits</strong> to your wallet.
-                Start asking clinical questions in the Afya Drop app right away.
+                Start asking clinical questions right away.
               </p>
-              <Link href="/dashboard" className="btn-primary mt-6 inline-flex">View wallet →</Link>
+              <a href="/app" className="btn-primary mt-6 inline-flex">Open AfyaDrop App →</a>
             </div>
           )}
         </Card>

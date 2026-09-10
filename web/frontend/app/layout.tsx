@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
-import { InstallBanner } from "@/components/InstallBanner";
+import { SiteShell } from "@/components/SiteShell";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -67,10 +65,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         />
       </head>
       <body className="flex min-h-screen flex-col">
-        <Navbar />
-        <div className="flex-1">{children}</div>
-        <Footer />
-        <InstallBanner />
+        {/*
+          SiteShell is a client component that checks the pathname:
+          - /app/* → renders children bare (the app shell layout takes over)
+          - everything else → wraps with Navbar + Footer + InstallBanner
+        */}
+        <SiteShell>{children}</SiteShell>
       </body>
     </html>
   );

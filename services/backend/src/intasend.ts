@@ -26,7 +26,7 @@ export async function createCheckout(input: CreateCheckoutInput): Promise<{ url:
       amount: input.amount,
       currency: input.currency || "USD",
       api_ref: input.apiRef,
-      redirect_url: input.redirectUrl || config.intasend.callbackUrl || "https://afyadrop.com/dashboard",
+      redirect_url: input.redirectUrl || config.intasend.callbackUrl || `${config.siteUrl}/app/wallet?status=paid`,
       host: config.siteUrl || "https://afyadrop.com",
     };
     if (input.phone) {

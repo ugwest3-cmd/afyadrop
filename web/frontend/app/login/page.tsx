@@ -21,7 +21,7 @@ export default function Login() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) router.push("/dashboard");
+      if (data.session) router.push("/app");
     });
   }, [router]);
 
@@ -48,7 +48,7 @@ export default function Login() {
     try {
       const { error: verifyError } = await supabase.auth.verifyOtp({ email, token: code, type: "email" });
       if (verifyError) throw verifyError;
-      router.push("/dashboard");
+      router.push("/app");
     } catch (err) {
       setError((err as Error).message);
     } finally {
