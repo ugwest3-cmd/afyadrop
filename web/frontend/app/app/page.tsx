@@ -7,8 +7,6 @@ import { supabase } from "@/lib/supabaseClient";
 import { api, type QALog } from "@/lib/api";
 
 const QUICK_CHIPS = [
-  "Malaria treatment",
-  "Pneumonia",
   "Anaemia",
   "Hypertension",
   "Sepsis",
@@ -224,20 +222,6 @@ export default function AskPage() {
 
       {/* Input area */}
       <div className="chat-input-area">
-        {/* Quick chips (only when empty) */}
-        {displayed.length === 0 && !pendingQ && (
-          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-            {QUICK_CHIPS.slice(0, 4).map((chip) => (
-              <button
-                key={chip}
-                onClick={() => { setQuestion(chip); textareaRef.current?.focus(); }}
-                className="shrink-0 rounded-full border border-teal/15 bg-white px-3 py-1.5 text-xs font-medium text-teal/80 transition-colors hover:border-teal/30"
-              >
-                {chip}
-              </button>
-            ))}
-          </div>
-        )}
 
         {/* Image preview */}
         {(imageFile || uploadingImage) && (
@@ -285,7 +269,7 @@ export default function AskPage() {
                   handleAsk();
                 }
               }}
-              placeholder="Ask a clinical question…"
+              placeholder="Ask a question..."
               className="w-full resize-none overflow-hidden rounded-2xl border border-gray-200 bg-white py-2.5 pl-4 pr-12 text-sm text-gray-900 placeholder:text-gray-400 focus:border-teal/40 focus:outline-none focus:ring-2 focus:ring-teal/10"
               style={{ maxHeight: 120 }}
             />

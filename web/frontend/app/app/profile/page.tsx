@@ -109,7 +109,7 @@ export default function ProfilePage() {
         <h2 className="mb-2 text-xs font-bold uppercase tracking-wider text-gray-400">Settings &amp; Support</h2>
         <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm divide-y divide-gray-100">
           <a
-            href="mailto:support@afyadrop.com"
+            href="mailto:info@afyalinks.com"
             className="flex items-center gap-3 px-4 py-4"
           >
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-50">
