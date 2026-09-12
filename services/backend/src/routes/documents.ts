@@ -2,7 +2,13 @@ import { Router } from "express";
 import { supabase } from "../db.js";
 import { ai, type ContextChunk } from "../ai.js";
 
+import multer from "multer";
+// @ts-ignore
+import pdfParse from "pdf-parse";
+
 export const documentsRouter = Router();
+
+const upload = multer({ storage: multer.memoryStorage() });
 
 // ---- Text chunking (naive, by characters with overlap) ----
 function chunkText(text: string, size = 1200, overlap = 150): string[] {
@@ -15,14 +21,36 @@ function chunkText(text: string, size = 1200, overlap = 150): string[] {
   return chunks.map((c) => c.trim()).filter(Boolean);
 }
 
-// POST /documents/ingest  { title, country, source_type, text, uploaded_by }
-// The frontend extracts text from the uploaded file (client-side) and posts it here.
-// We chunk, embed (via the AI service), and store rows in document_chunks.
-documentsRouter.post("/ingest", async (req, res) => {
-  const { title, country = "UG", source_type = "ucg", text, uploaded_by } = req.body ?? {};
+// POST /documents/ingest  { title, country, source_type, text, uploaded_by } OR multipart/form-data
+// The frontend can extract text from the uploaded file (client-side) and post JSON,
+// or it can send multipart/form-data with a `file` field.
+documentsRouter.post("/ingest", (req, res, next) => {
+  if (req.is('multipart/form-data')) {
+    upload.single('file')(req, res, next);
+  } else {
+    next();
+  }
+}, async (req, res) => {
+  const { title, country = "UG", source_type = "ucg", uploaded_by } = req.body ?? {};
   const countryCode = String(country).toUpperCase();
+  let text = req.body?.text;
+
+  if (req.file) {
+    try {
+      if (req.file.mimetype === 'application/pdf') {
+        const pdfData = await pdfParse(req.file.buffer);
+        text = pdfData.text;
+      } else {
+        text = req.file.buffer.toString('utf-8');
+      }
+    } catch (e) {
+      res.status(400).json({ error: "Failed to parse uploaded file." });
+      return;
+    }
+  }
+
   if (!title || typeof text !== "string" || !text.trim()) {
-    res.status(400).json({ error: "title and text are required" });
+    res.status(400).json({ error: "title and text/file are required" });
     return;
   }
 

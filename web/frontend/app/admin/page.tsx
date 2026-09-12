@@ -49,6 +49,7 @@ export default function Admin() {
   const [country, setCountry] = useState("UG");
   const [countries, setCountries] = useState<Array<{ code: string; name: string }>>([]);
   const [text, setText] = useState("");
+  const [file, setFile] = useState<File | null>(null);
 
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
@@ -106,16 +107,24 @@ export default function Admin() {
   }
 
   async function onFile(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const selectedFile = e.target.files?.[0];
+    if (!selectedFile) return;
     setError("");
-    try {
-      const content = await file.text();
-      setText(content);
-      if (!title) setTitle(file.name.replace(/\.[^.]+$/, ""));
-      setMessage(`Loaded ${file.name} (${content.length.toLocaleString()} chars).`);
-    } catch {
-      setError("Could not read that file. Use a plain-text (.txt) export for the MVP.");
+    setFile(selectedFile);
+    
+    if (!title) setTitle(selectedFile.name.replace(/\.[^.]+$/, ""));
+    
+    if (selectedFile.type === "application/pdf" || selectedFile.name.endsWith(".pdf")) {
+      setText("");
+      setMessage(`Loaded PDF: ${selectedFile.name} (will be parsed on server).`);
+    } else {
+      try {
+        const content = await selectedFile.text();
+        setText(content);
+        setMessage(`Loaded ${selectedFile.name} (${content.length.toLocaleString()} chars).`);
+      } catch {
+        setError("Could not read that file.");
+      }
     }
   }
 
@@ -125,15 +134,31 @@ export default function Admin() {
     setMessage("");
     setLoading(true);
     try {
+      let body: BodyInit;
+      const fetchHeaders: Record<string, string> = { "x-admin-secret": secret };
+
+      if (file && (file.type === "application/pdf" || file.name.endsWith(".pdf"))) {
+        const formData = new FormData();
+        formData.append("title", title);
+        formData.append("country", country);
+        formData.append("source_type", sourceType);
+        formData.append("file", file);
+        body = formData;
+      } else {
+        fetchHeaders["content-type"] = "application/json";
+        body = JSON.stringify({ title, country, source_type: sourceType, text });
+      }
+
       const res = await fetch(`${API}/documents/ingest`, {
         method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ title, country, source_type: sourceType, text }),
+        headers: fetchHeaders,
+        body,
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? `Ingest failed (${res.status})`);
       setMessage(`Ingested "${title}" into ${data.chunks} searchable chunks.`);
       setText("");
+      setFile(null);
       await loadAll();
     } catch (err) {
       setError((err as Error).message);
@@ -272,7 +297,7 @@ export default function Admin() {
             <Card>
               <h2 className="text-xl font-bold text-teal">Upload clinical reference</h2>
               <p className="mt-1 text-sm text-muted">
-                Upload a country's national clinical guideline (or another reference) as plain text. It becomes the ONLY source clinicians in that country get answers from.
+                Upload a country's national clinical guideline (or another reference) as a plain text or PDF file. It becomes the ONLY source clinicians in that country get answers from.
               </p>
               <form onSubmit={onIngest} className="mt-5 space-y-5">
                 <Select id="country" label="Country this guideline applies to" value={country} onChange={(e) => setCountry(e.target.value)}>
@@ -289,16 +314,16 @@ export default function Admin() {
                   <option value="other">Other</option>
                 </Select>
                 <div>
-                  <label htmlFor="file" className="label">File (.txt)</label>
+                  <label htmlFor="file" className="label">File (.txt, .pdf)</label>
                   <label
                     htmlFor="file"
                     className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-teal/20 bg-white px-4 py-8 text-center hover:border-sage-500"
                   >
-                    <span className="text-sm text-muted">{text ? `${text.length.toLocaleString()} characters ready` : "Click to choose a .txt file"}</span>
-                    <input id="file" type="file" accept=".txt,.md,.text" onChange={onFile} className="hidden" />
+                    <span className="text-sm text-muted">{text ? `${text.length.toLocaleString()} characters ready` : file ? `Ready to ingest ${file.name}` : "Click to choose a .txt or .pdf file"}</span>
+                    <input id="file" type="file" accept=".txt,.md,.text,.pdf,application/pdf" onChange={onFile} className="hidden" />
                   </label>
                 </div>
-                <Button type="submit" loading={loading} disabled={!text} className="w-full">Ingest document</Button>
+                <Button type="submit" loading={loading} disabled={!text && !file} className="w-full">Ingest document</Button>
               </form>
             </Card>
 
