@@ -39,13 +39,15 @@ documentsRouter.post("/ingest", (req, res, next) => {
   if (req.file) {
     try {
       if (req.file.mimetype === 'application/pdf') {
-        const pdfData = await pdfParse(req.file.buffer);
+        const pdf = new pdfParse.PDFParse({ data: req.file.buffer });
+        const pdfData = await pdf.getText();
         text = pdfData.text;
       } else {
         text = req.file.buffer.toString('utf-8');
       }
-    } catch (e) {
-      res.status(400).json({ error: "Failed to parse uploaded file." });
+    } catch (e: any) {
+      console.error("PDF Parse error:", e);
+      res.status(400).json({ error: "Failed to parse uploaded file. " + (e?.message || e) });
       return;
     }
   }
