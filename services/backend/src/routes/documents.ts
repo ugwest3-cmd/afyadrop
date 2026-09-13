@@ -3,8 +3,9 @@ import { supabase } from "../db.js";
 import { ai, type ContextChunk } from "../ai.js";
 
 import multer from "multer";
-// @ts-ignore
-import pdfParse from "pdf-parse";
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
+const pdfParse = require("pdf-parse");
 
 export const documentsRouter = Router();
 
