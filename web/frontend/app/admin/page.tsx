@@ -167,6 +167,26 @@ export default function Admin() {
     }
   }
 
+  async function onDeleteDoc(id: string) {
+    if (!window.confirm("Delete this document?")) return;
+    setError("");
+    setMessage("");
+    try {
+      const res = await fetch(`${API}/documents/${id}`, {
+        method: "DELETE",
+        headers: headers(),
+      });
+      if (!res.ok) {
+        const d = await res.json();
+        throw new Error(d.error ?? "Failed to delete");
+      }
+      setMessage("Document deleted.");
+      await loadAll();
+    } catch (err) {
+      setError((err as Error).message);
+    }
+  }
+
   if (!authed) {
     return (
       <main className="flex min-h-[70vh] items-center bg-cream py-16">
@@ -336,14 +356,22 @@ export default function Admin() {
                       <div className="font-medium text-teal">{d.title}</div>
                       <div className="text-xs text-muted">{d.country} · {d.source_type}</div>
                     </div>
-                    <span
-                      className={
-                        "rounded-full px-2.5 py-1 text-xs font-semibold " +
-                        (d.status === "ready" ? "bg-sage/60 text-teal" : d.status === "failed" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-800")
-                      }
-                    >
-                      {d.status}
-                    </span>
+                    <div className="flex items-center gap-3">
+                      <span
+                        className={
+                          "rounded-full px-2.5 py-1 text-xs font-semibold " +
+                          (d.status === "ready" ? "bg-sage/60 text-teal" : d.status === "failed" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-800")
+                        }
+                      >
+                        {d.status}
+                      </span>
+                      <button
+                        onClick={() => onDeleteDoc(d.id)}
+                        className="rounded-lg px-2 py-1 text-xs font-semibold bg-red-50 text-red-700 hover:bg-red-100"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </li>
                 ))}
                 {!docs.length && <li className="text-sm text-muted">No documents yet.</li>}
