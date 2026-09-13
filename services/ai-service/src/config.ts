@@ -6,8 +6,8 @@ export const config = {
   internalSecret: process.env.INTERNAL_API_SECRET ?? "",
   embedding: {
     // Used to embed UCG chunks and incoming questions for retrieval.
-    apiKey: process.env.EMBEDDING_API_KEY ?? process.env.GROQ_API_KEY ?? "",
-    baseUrl: process.env.EMBEDDING_BASE_URL ?? "https://api.groq.com/openai/v1",
+    apiKey: process.env.EMBEDDING_API_KEY ?? process.env.OPENAI_API_KEY ?? "",
+    baseUrl: process.env.EMBEDDING_BASE_URL ?? "https://api.openai.com/v1",
     model: process.env.EMBEDDING_MODEL ?? "text-embedding-3-small",
   },
 };

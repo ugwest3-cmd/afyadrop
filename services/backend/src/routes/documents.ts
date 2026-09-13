@@ -116,6 +116,7 @@ documentsRouter.delete("/:id", async (req, res) => {
 // ---- Retrieval: find the most relevant guideline chunks for a question,
 // restricted to the clinician's own country. ----
 export async function retrieveContext(question: string, country: string, matchCount = 6): Promise<ContextChunk[]> {
+  const countryCode = String(country).toUpperCase();
   // 1. Embed the question
   const { embedding } = await ai.embed(question);
   if (!embedding.length) return [];
@@ -125,7 +126,7 @@ export async function retrieveContext(question: string, country: string, matchCo
     query_embedding: JSON.stringify(embedding),
     match_count: matchCount,
     match_threshold: 0.2,
-    match_country: country,
+    match_country: countryCode,
   });
   if (error || !data) return [];
 
