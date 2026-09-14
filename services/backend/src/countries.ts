@@ -6,18 +6,19 @@ export interface Country {
   name: string;
   dial: string;      // e.g. "1" or "44" or "256"
   guidelineName: string; // display name of the national clinical guideline
+  currency: string;  // e.g. "USD", "UGX"
 }
 
 export const COUNTRIES: Country[] = [
-  { code: "US", name: "United States", dial: "1", guidelineName: "US Clinical Guidelines" },
-  { code: "GB", name: "United Kingdom", dial: "44", guidelineName: "NICE Clinical Guidelines" },
-  { code: "IN", name: "India", dial: "91", guidelineName: "India Standard Treatment Guidelines" },
-  { code: "UG", name: "Uganda", dial: "256", guidelineName: "Uganda Clinical Guidelines (UCG)" },
-  { code: "KE", name: "Kenya", dial: "254", guidelineName: "Kenya Clinical Guidelines" },
-  { code: "TZ", name: "Tanzania", dial: "255", guidelineName: "Tanzania Standard Treatment Guidelines" },
-  { code: "RW", name: "Rwanda", dial: "250", guidelineName: "Rwanda National Treatment Guidelines" },
-  { code: "NG", name: "Nigeria", dial: "234", guidelineName: "Nigeria National Guidelines" },
-  { code: "ZA", name: "South Africa", dial: "27", guidelineName: "South Africa Standard Treatment Guidelines" },
+  { code: "US", name: "United States", dial: "1", guidelineName: "US Clinical Guidelines", currency: "USD" },
+  { code: "GB", name: "United Kingdom", dial: "44", guidelineName: "NICE Clinical Guidelines", currency: "GBP" },
+  { code: "IN", name: "India", dial: "91", guidelineName: "India Standard Treatment Guidelines", currency: "INR" },
+  { code: "UG", name: "Uganda", dial: "256", guidelineName: "Uganda Clinical Guidelines (UCG)", currency: "UGX" },
+  { code: "KE", name: "Kenya", dial: "254", guidelineName: "Kenya Clinical Guidelines", currency: "KES" },
+  { code: "TZ", name: "Tanzania", dial: "255", guidelineName: "Tanzania Standard Treatment Guidelines", currency: "TZS" },
+  { code: "RW", name: "Rwanda", dial: "250", guidelineName: "Rwanda National Treatment Guidelines", currency: "RWF" },
+  { code: "NG", name: "Nigeria", dial: "234", guidelineName: "Nigeria National Guidelines", currency: "NGN" },
+  { code: "ZA", name: "South Africa", dial: "27", guidelineName: "South Africa Standard Treatment Guidelines", currency: "ZAR" },
 ];
 
 export function getCountry(code: string): Country | undefined {

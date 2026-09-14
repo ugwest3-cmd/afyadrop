@@ -3,6 +3,8 @@ import { supabase } from "../db.js";
 import { config } from "../config.js";
 import { createCheckout } from "../intasend.js";
 import { requireAuth } from "../authMiddleware.js";
+import { getCountry } from "../countries.js";
+import { getExchangeRate } from "../exchangeRates.js";
 
 export const creditsRouter = Router();
 
@@ -29,21 +31,38 @@ creditsRouter.post("/purchase", requireAuth, async (req, res) => {
     res.status(400).json({ error: "user_id and a positive integer credits are required" });
     return;
   }
-  const amount = qty * config.creditPriceUsd;
-  if (amount < config.minPurchaseUsd) {
+  
+  const baseAmountUsd = qty * config.creditPriceUsd;
+  if (baseAmountUsd < config.minPurchaseUsd) {
     res.status(400).json({ error: `minimum purchase is $${config.minPurchaseUsd}` });
     return;
   }
 
-  const { data: user } = await supabase.from("users").select("email").eq("id", user_id).single();
+  const { data: user } = await supabase.from("users").select("email, country").eq("id", user_id).single();
   if (!user) {
     res.status(404).json({ error: "user not found" });
     return;
   }
 
+  const country = user.country ? getCountry(user.country) : undefined;
+  const currency = country?.currency ?? "USD";
+
+  let amount = baseAmountUsd;
+  try {
+    const rate = await getExchangeRate(currency);
+    amount = Number((baseAmountUsd * rate).toFixed(2));
+  } catch (err) {
+    console.error("Failed to convert currency:", err);
+    // fallback to USD if rate fetching fails and it's strictly needed
+    if (currency !== "USD") {
+      res.status(500).json({ error: "failed to calculate local currency price" });
+      return;
+    }
+  }
+
   const { data: payment, error } = await supabase
     .from("payments")
-    .insert({ user_id, credits: qty, amount, currency: "USD", status: "pending" })
+    .insert({ user_id, credits: qty, amount, currency, status: "pending" })
     .select()
     .single();
   if (error || !payment) {
@@ -54,7 +73,7 @@ creditsRouter.post("/purchase", requireAuth, async (req, res) => {
   try {
     const order = await createCheckout({
       amount,
-      currency: "USD",
+      currency,
       email: user.email || "",
       apiRef: payment.id,
     });
