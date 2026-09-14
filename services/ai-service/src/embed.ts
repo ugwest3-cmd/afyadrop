@@ -31,6 +31,7 @@ async function callEmbedAPI(
       body: JSON.stringify({
         model: config.embedding.model,
         task: config.embedding.task,
+        dimensions: config.embedding.dimensions,
         truncate: true,
         input: Array.isArray(input) ? input : [input],
       }),

@@ -10,6 +10,7 @@ export const config = {
     baseUrl: process.env.EMBEDDING_BASE_URL ?? "https://api.jina.ai/v1",
     model: process.env.EMBEDDING_MODEL ?? "jina-embeddings-v3",
     task: process.env.EMBEDDING_TASK ?? "text-matching",
+    dimensions: Number(process.env.EMBEDDING_DIMENSIONS ?? 768),
   },
 };
 
