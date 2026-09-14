@@ -426,7 +426,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildAiResponseCard(String answerText) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 24.0, right: 16.0),
+      padding: const EdgeInsets.only(bottom: 24.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -446,68 +446,81 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
           const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: const BorderRadius.only(
-                topRight: Radius.circular(20),
-                bottomLeft: Radius.circular(20),
-                bottomRight: Radius.circular(20),
-                topLeft: Radius.circular(4),
-              ),
-              border: Border.all(color: Colors.grey.withValues(alpha: 0.15)),
-              boxShadow: [
-                BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 10, offset: const Offset(0, 4)),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                MarkdownBody(
-                  data: answerText,
-                  styleSheet: MarkdownStyleSheet(
-                    p: const TextStyle(fontSize: 15, color: Colors.black87, height: 1.6),
-                    h1: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700, height: 1.4),
-                    h2: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, height: 1.4),
-                    h3: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, height: 1.4),
-                    listBullet: const TextStyle(color: AfyaColors.primary),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              return Container(
+                width: constraints.maxWidth,
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: const BorderRadius.only(
+                    topRight: Radius.circular(20),
+                    bottomLeft: Radius.circular(20),
+                    bottomRight: Radius.circular(20),
+                    topLeft: Radius.circular(4),
                   ),
+                  border: Border.all(color: Colors.grey.withValues(alpha: 0.15)),
+                  boxShadow: [
+                    BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 10, offset: const Offset(0, 4)),
+                  ],
                 ),
-                const SizedBox(height: 12),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    IconButton(
-                      icon: const Icon(Icons.thumb_up_alt_outlined, size: 16, color: Colors.grey),
-                      onPressed: () {},
-                      visualDensity: VisualDensity.compact,
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
+                    MarkdownBody(
+                      data: answerText,
+                      softLineBreak: true,
+                      fitContent: false,
+                      styleSheet: MarkdownStyleSheet(
+                        p: const TextStyle(fontSize: 14, color: Colors.black87, height: 1.6),
+                        h1: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, height: 1.4),
+                        h2: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, height: 1.4),
+                        h3: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700, height: 1.4),
+                        listBullet: const TextStyle(color: AfyaColors.primary, fontSize: 14),
+                        listBulletPadding: const EdgeInsets.only(right: 4),
+                        blockSpacing: 8,
+                        tableHead: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                        tableBody: const TextStyle(fontSize: 13),
+                        tableCellsPadding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                        tableBorder: TableBorder.all(color: Colors.grey.withValues(alpha: 0.3)),
+                      ),
                     ),
-                    const SizedBox(width: 12),
-                    IconButton(
-                      icon: const Icon(Icons.thumb_down_alt_outlined, size: 16, color: Colors.grey),
-                      onPressed: () {},
-                      visualDensity: VisualDensity.compact,
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                    ),
-                    const SizedBox(width: 12),
-                    IconButton(
-                      icon: const Icon(Icons.copy_rounded, size: 16, color: Colors.grey),
-                      onPressed: () {
-                        Clipboard.setData(ClipboardData(text: answerText));
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Copied to clipboard')));
-                      },
-                      visualDensity: VisualDensity.compact,
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
+                    const SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.thumb_up_alt_outlined, size: 16, color: Colors.grey),
+                          onPressed: () {},
+                          visualDensity: VisualDensity.compact,
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                        ),
+                        const SizedBox(width: 12),
+                        IconButton(
+                          icon: const Icon(Icons.thumb_down_alt_outlined, size: 16, color: Colors.grey),
+                          onPressed: () {},
+                          visualDensity: VisualDensity.compact,
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                        ),
+                        const SizedBox(width: 12),
+                        IconButton(
+                          icon: const Icon(Icons.copy_rounded, size: 16, color: Colors.grey),
+                          onPressed: () {
+                            Clipboard.setData(ClipboardData(text: answerText));
+                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Copied to clipboard')));
+                          },
+                          visualDensity: VisualDensity.compact,
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
-            ),
+              );
+            },
           ),
         ],
       ),
