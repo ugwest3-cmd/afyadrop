@@ -6,9 +6,10 @@ export const config = {
   internalSecret: process.env.INTERNAL_API_SECRET ?? "",
   embedding: {
     // Used to embed UCG chunks and incoming questions for retrieval.
-    apiKey: process.env.EMBEDDING_API_KEY ?? process.env.OPENAI_API_KEY ?? "",
-    baseUrl: process.env.EMBEDDING_BASE_URL ?? "https://api.openai.com/v1",
-    model: process.env.EMBEDDING_MODEL ?? "text-embedding-3-small",
+    apiKey: process.env.EMBEDDING_API_KEY ?? process.env.JINA_API_KEY ?? "",
+    baseUrl: process.env.EMBEDDING_BASE_URL ?? "https://api.jina.ai/v1",
+    model: process.env.EMBEDDING_MODEL ?? "jina-embeddings-v3",
+    task: process.env.EMBEDDING_TASK ?? "text-matching",
   },
 };
 
